@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bem-estar, saúde mental e autoestima para mulheres trans e femboys - FemGuide">
+    <meta property="og:title" content="Bem-estar & Autoestima - FemGuide">
+    <meta property="og:description" content="Cuidados com a saúde mental, autoestima e recursos para uma jornada de gênero mais saudável">
+    <link rel="canonical" href="https://femguide.com/bem-estar">
+    <title>Bem-estar & Autoestima - FemGuide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dark { --tw-bg-opacity: 1; background-color: rgb(17 24 39 / var(--tw-bg-opacity)); color: rgb(229 231 235 / var(--tw-text-opacity)); }
+        .dark .bg-white { background-color: rgb(31 41 55 / var(--tw-bg-opacity)); }
+        .dark .text-gray-800 { color: rgb(229 231 235 / var(--tw-text-opacity)); }
+        .dark .text-gray-700 { color: rgb(209 213 219 / var(--tw-text-opacity)); }
+        .post-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link:hover { transform: translateY(-1px); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- INCLUDE HEADER -->
+    <div class="bg-gray-200 py-2 px-4 flex justify-end space-x-4 text-sm">
+        <button onclick="toggleDarkMode()" class="accessibility-btn px-2 py-1 rounded bg-white hover:bg-gray-300" aria-label="Alternar modo escuro" aria-pressed="false" id="dark-mode-toggle">
+            <i class="fas fa-moon mr-1"></i> <span class="pt">Modo Escuro</span><span class="en hidden">Dark Mode</span>
+        </button>
+        <button onclick="toggleTextSize()" class="accessibility-btn px-2 py-1 rounded bg-white hover:bg-gray-300" aria-label="Aumentar/Reduzir tamanho do texto" aria-expanded="false" id="text-size-toggle">
+            <i class="fas fa-text-height mr-1"></i> <span class="pt">Aumentar/Reduzir Texto</span><span class="en hidden">Increase/Reduce Text</span>
+        </button>
+    </div>
+
+    <header class="bg-gradient-to-r from-blue-400 to-purple-400 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <div class="relative" id="language-menu">
+                    <button id="lang-switcher" class="language-switcher bg-purple-600 text-white px-3 py-1 rounded-full font-medium flex items-center">
+                        <span class="mr-1">🌐</span><span id="current-lang">PT</span><i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                        <button onclick="changeLanguage('pt')" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-purple-100">🇧🇷 Português</button>
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-purple-100">🇺🇸 English</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="https://instagram.com/femguide" class="p-2 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50" target="_blank" aria-label="Instagram">
+                        <i class="fab fa-instagram text-white"></i>
+                    </a>
+                    <a href="https://twitter.com/femguide" class="p-2 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50" target="_blank" aria-label="Twitter">
+                        <i class="fab fa-twitter text-white"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <span class="pt">Bem-estar & Autoestima</span>
+                    <span class="en hidden">Well-being & Self-esteem</span>
+                </h1>
+                <p class="text-xl text-white max-w-2xl mx-auto">
+                    <span class="pt">Cuidados com a saúde mental para uma jornada mais saudável e feliz</span>
+                    <span class="en hidden">Mental health care for a healthier and happier journey</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <button class="md:hidden text-purple-600 text-2xl" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+                <div class="hidden md:flex space-x-8">
+                    <a href="./index.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Início</span><span class="en hidden">Home</span>
+                    </a>
+                    <a href="./guia-estilo.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Guia de Estilo</span><span class="en hidden">Style Guide</span>
+                    </a>
+                    <a href="./comportamento.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Comportamento</span><span class="en hidden">Behavior</span>
+                    </a>
+                    <a href="./bem-estar.html" class="nav-link text-purple-600 font-medium">
+                        <span class="pt">Bem-estar</span><span class="en hidden">Well-being</span>
+                    </a>
+                    <a href="./historias.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Histórias</span><span class="en hidden">Stories</span>
+                    </a>
+                    <a href="./sobre.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Sobre</span><span class="en hidden">About</span>
+                    </a>
+                    <a href="./contato.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Contato</span><span class="en hidden">Contact</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <button class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition">
+                        <span class="pt">Assinar</span><span class="en hidden">Subscribe</span>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden bg-white py-4 px-2 shadow-lg rounded-lg mt-2">
+                <a href="./index.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Início</span><span class="en hidden">Home</span>
+                </a>
+                <a href="./guia-estilo.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Guia de Estilo</span><span class="en hidden">Style Guide</span>
+                </a>
+                <a href="./comportamento.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Comportamento</span><span class="en hidden">Behavior</span>
+                </a>
+                <a href="./bem-estar.html" class="block py-2 px-4 text-purple-600 font-medium">
+                    <span class="pt">Bem-estar</span><span class="en hidden">Well-being</span>
+                </a>
+                <a href="./historias.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Histórias</span><span class="en hidden">Stories</span>
+                </a>
+                <a href="./sobre.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Sobre</span><span class="en hidden">About</span>
+                </a>
+                <a href="./contato.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Contato</span><span class="en hidden">Contact</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CMS: WELLBEING - MAIN CONTENT -->
+    <main class="container mx-auto px-4 py-8">
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-3xl font-bold text-purple-600 mb-6">
+                    <span class="pt">Cuide da Sua Saúde Mental</span>
+                    <span class="en hidden">Take Care of Your Mental Health</span>
+                </h2>
+                <p class="text-gray-700 mb-4 text-lg">
+                    <span class="pt">Sua jornada de autoexpressão e descoberta é única. Aqui você encontrará recursos, dicas e suporte para cuidar do seu bem-estar emocional, construir autoestima e navegar os desafios com resiliência.</span>
+                    <span class="en hidden">Your journey of self-expression and discovery is unique. Here you'll find resources, tips, and support to care for your emotional well-being, build self-esteem, and navigate challenges with resilience.</span>
+                </p>
+                <div class="bg-blue-50 rounded-lg p-6 mt-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-heart text-blue-600 mr-3"></i>
+                        <h3 class="text-xl font-bold text-blue-600">
+                            <span class="pt">Você não está sozinha</span>
+                            <span class="en hidden">You're not alone</span>
+                        </h3>
+                    </div>
+                    <p class="text-gray-700">
+                        <span class="pt">Lembre-se: buscar ajuda profissional é sempre válido. Os recursos aqui complementam, mas não substituem, o acompanhamento psicológico profissional.</span>
+                        <span class="en hidden">Remember: seeking professional help is always valid. The resources here complement, but don't replace, professional psychological support.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <span class="pt">Áreas de Bem-estar</span>
+                <span class="en hidden">Wellness Areas</span>
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Autoestima e amor-próprio" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-purple-600 mb-3">
+                            <span class="pt">Autoestima</span>
+                            <span class="en hidden">Self-esteem</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Estratégias para construir amor-próprio e confiança durante sua jornada.</span>
+                            <span class="en hidden">Strategies to build self-love and confidence during your journey.</span>
+                        </p>
+                        <div class="flex items-center text-purple-600 font-medium">
+                            <span class="pt">14 artigos</span>
+                            <span class="en hidden">14 articles</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Ansiedade e gestão emocional" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-purple-600 mb-3">
+                            <span class="pt">Ansiedade & Emoções</span>
+                            <span class="en hidden">Anxiety & Emotions</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Técnicas para gerenciar ansiedade, disforia e outras emoções desafiadoras.</span>
+                            <span class="en hidden">Techniques to manage anxiety, dysphoria, and other challenging emotions.</span>
+                        </p>
+                        <div class="flex items-center text-purple-600 font-medium">
+                            <span class="pt">18 artigos</span>
+                            <span class="en hidden">18 articles</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Relacionamentos e apoio social" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-purple-600 mb-3">
+                            <span class="pt">Relacionamentos</span>
+                            <span class="en hidden">Relationships</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Navegando relacionamentos familiares, românticos e amizades durante a transição.</span>
+                            <span class="en hidden">Navigating family, romantic relationships, and friendships during transition.</span>
+                        </p>
+                        <div class="flex items-center text-purple-600 font-medium">
+                            <span class="pt">16 artigos</span>
+                            <span class="en hidden">16 articles</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 bg-blue-50 rounded-xl p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <span class="pt">Recursos de Apoio</span>
+                <span class="en hidden">Support Resources</span>
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-purple-600 mb-4">
+                        <span class="pt">🏥 Ajuda Profissional</span>
+                        <span class="en hidden">🏥 Professional Help</span>
+                    </h3>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Lista de psicólogos especializados em questões de gênero</span>
+                            <span class="en hidden">List of psychologists specialized in gender issues</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Centros de saúde mental LGBTQ+ friendly</span>
+                            <span class="en hidden">LGBTQ+ friendly mental health centers</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Serviços de terapia online</span>
+                            <span class="en hidden">Online therapy services</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-purple-600 mb-4">
+                        <span class="pt">💬 Grupos de Apoio</span>
+                        <span class="en hidden">💬 Support Groups</span>
+                    </h3>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Grupos de apoio presenciais por região</span>
+                            <span class="en hidden">In-person support groups by region</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Comunidades online seguras</span>
+                            <span class="en hidden">Safe online communities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                            <span class="pt">Chats de suporte 24/7</span>
+                            <span class="en hidden">24/7 support chats</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- INCLUDE FOOTER -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Sobre</span>
+                        <span class="en hidden">About</span>
+                    </h3>
+                    <p class="text-gray-300 mb-4">
+                        <span class="pt">FemGuide é um espaço seguro e acolhedor para femboys e garotas trans explorarem sua expressão feminina.</span>
+                        <span class="en hidden">FemGuide is a safe and welcoming space for femboys and trans girls to explore their feminine expression.</span>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Links Rápidos</span>
+                        <span class="en hidden">Quick Links</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./index.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Início</span>
+                            <span class="en hidden">Home</span>
+                        </a></li>
+                        <li><a href="./guia-estilo.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Guia de Estilo</span>
+                            <span class="en hidden">Style Guide</span>
+                        </a></li>
+                        <li><a href="./comportamento.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Comportamento</span>
+                            <span class="en hidden">Behavior</span>
+                        </a></li>
+                        <li><a href="./bem-estar.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Bem-estar</span>
+                            <span class="en hidden">Well-being</span>
+                        </a></li>
+                        <li><a href="./historias.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Histórias</span>
+                            <span class="en hidden">Stories</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Recursos</span>
+                        <span class="en hidden">Resources</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./termos.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Termos de Uso</span>
+                            <span class="en hidden">Terms of Use</span>
+                        </a></li>
+                        <li><a href="./privacidade.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Política de Privacidade</span>
+                            <span class="en hidden">Privacy Policy</span>
+                        </a></li>
+                        <li><a href="./faq.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">FAQ</span>
+                            <span class="en hidden">FAQ</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Contato</span>
+                        <span class="en hidden">Contact</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./contato.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Fale Conosco</span>
+                            <span class="en hidden">Contact Us</span>
+                        </a></li>
+                        <li><i class="fas fa-envelope mr-2 text-purple-400"></i>contato@femguide.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>
+                    <span class="pt">© 2025 FemGuide. Todos os direitos reservados.</span>
+                    <span class="en hidden">© 2025 FemGuide. All rights reserved.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+        }
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+        
+        let textLarge = false;
+        function toggleTextSize() {
+            textLarge = !textLarge;
+            document.body.style.fontSize = textLarge ? '1.15em' : '';
+        }
+        
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+        
+        function changeLanguage(lang) {
+            document.getElementById('current-lang').textContent = lang.toUpperCase();
+            document.querySelectorAll('.pt, .en').forEach(el => {
+                if (el.classList.contains(lang)) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            localStorage.setItem('preferredLanguage', lang);
+            document.getElementById('lang-dropdown').classList.add('hidden');
+            
+            if (lang === 'en') {
+                setTimeout(() => {
+                    window.location.href = './en/bem-estar.html';
+                }, 500);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('lang-switcher');
+            const dropdown = document.getElementById('lang-dropdown');
+            
+            switcher.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('language-menu').contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

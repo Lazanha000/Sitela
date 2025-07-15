@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FemGuide - Espaço seguro para mulheres trans e femboys explorarem feminilidade, estilo e autoestima">
+    <meta property="og:title" content="FemGuide | Seu espaço seguro para mulheres trans e femboys">
+    <meta property="og:description" content="Recursos, dicas e comunidade para expressão feminina e jornada de gênero">
+    <meta property="og:image" content="https://femguide.com/images/og-image.webp">
+    <meta property="og:url" content="https://femguide.com">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <link rel="canonical" href="https://femguide.com">
+    <title>FemGuide - Seu espaço seguro para mulheres trans e femboys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dark {
+            --tw-bg-opacity: 1;
+            background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+            color: rgb(229 231 235 / var(--tw-text-opacity));
+        }
+        .dark .bg-white {
+            background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+        }
+        .dark .text-gray-800 {
+            color: rgb(229 231 235 / var(--tw-text-opacity));
+        }
+        .dark .text-gray-700 {
+            color: rgb(209 213 219 / var(--tw-text-opacity));
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- INCLUDE HEADER -->
+    <!-- Accessibility Tools -->
+    <div class="bg-gray-200 py-2 px-4 flex justify-end space-x-4 text-sm">
+        <button onclick="toggleDarkMode()" class="accessibility-btn px-2 py-1 rounded bg-white hover:bg-gray-300" aria-label="Alternar modo escuro" aria-pressed="false" id="dark-mode-toggle">
+            <i class="fas fa-moon mr-1"></i> <span class="pt">Modo Escuro</span><span class="en hidden">Dark Mode</span>
+        </button>
+        <button onclick="toggleTextSize()" class="accessibility-btn px-2 py-1 rounded bg-white hover:bg-gray-300" aria-label="Aumentar/Reduzir tamanho do texto" aria-expanded="false" id="text-size-toggle">
+            <i class="fas fa-text-height mr-1"></i> <span class="pt">Aumentar/Reduzir Texto</span><span class="en hidden">Increase/Reduce Text</span>
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-pink-300 to-purple-400 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <!-- MENU DE IDIOMA -->
+                <div class="relative" id="language-menu">
+                    <button id="lang-switcher" class="language-switcher bg-purple-600 text-white px-3 py-1 rounded-full font-medium flex items-center" aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-1">🌐</span>
+                        <span id="current-lang">PT</span>
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg py-1 z-10 hidden" role="menu" aria-label="Trocar idioma">
+                        <button onclick="changeLanguage('pt')" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-purple-100">🇧🇷 Português</button>
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-purple-100">🇺🇸 English</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="https://instagram.com/femguide" class="p-2 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50" target="_blank" aria-label="Instagram" rel="noopener noreferrer">
+                        <i class="fab fa-instagram text-white"></i>
+                    </a>
+                    <a href="https://twitter.com/femguide" class="p-2 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50" target="_blank" aria-label="Twitter" rel="noopener noreferrer">
+                        <i class="fab fa-twitter text-white"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <span class="pt">FemGuide</span>
+                    <span class="en hidden">FemGuide</span>
+                </h1>
+                <p class="text-xl text-white max-w-2xl mx-auto">
+                    <span class="pt">Seu espaço seguro para mulheres trans e femboys</span>
+                    <span class="en hidden">Your safe space for trans women and femboys</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <button class="md:hidden text-purple-600 text-2xl" onclick="toggleMobileMenu()" aria-controls="mobile-menu" aria-expanded="false" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="hidden md:flex space-x-8" role="navigation" aria-label="Main">
+                    <a href="./index.html" class="nav-link text-purple-600 font-medium">
+                        <span class="pt">Início</span>
+                        <span class="en hidden">Home</span>
+                    </a>
+                    <a href="./guia-estilo.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Guia de Estilo</span>
+                        <span class="en hidden">Style Guide</span>
+                    </a>
+                    <a href="./comportamento.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Comportamento</span>
+                        <span class="en hidden">Behavior</span>
+                    </a>
+                    <a href="./bem-estar.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Bem-estar</span>
+                        <span class="en hidden">Well-being</span>
+                    </a>
+                    <a href="./historias.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Histórias</span>
+                        <span class="en hidden">Stories</span>
+                    </a>
+                    <a href="./sobre.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Sobre</span>
+                        <span class="en hidden">About</span>
+                    </a>
+                    <a href="./contato.html" class="nav-link text-gray-700 hover:text-purple-600 font-medium">
+                        <span class="pt">Contato</span>
+                        <span class="en hidden">Contact</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <button class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition">
+                        <span class="pt">Assinar</span>
+                        <span class="en hidden">Subscribe</span>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden bg-white py-4 px-2 shadow-lg rounded-lg mt-2" role="menu">
+                <a href="./index.html" class="block py-2 px-4 text-purple-600 font-medium">
+                    <span class="pt">Início</span>
+                    <span class="en hidden">Home</span>
+                </a>
+                <a href="./guia-estilo.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Guia de Estilo</span>
+                    <span class="en hidden">Style Guide</span>
+                </a>
+                <a href="./comportamento.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Comportamento</span>
+                    <span class="en hidden">Behavior</span>
+                </a>
+                <a href="./bem-estar.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Bem-estar</span>
+                    <span class="en hidden">Well-being</span>
+                </a>
+                <a href="./historias.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Histórias</span>
+                    <span class="en hidden">Stories</span>
+                </a>
+                <a href="./sobre.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Sobre</span>
+                    <span class="en hidden">About</span>
+                </a>
+                <a href="./contato.html" class="block py-2 px-4 text-gray-700 hover:text-purple-600 font-medium">
+                    <span class="pt">Contato</span>
+                    <span class="en hidden">Contact</span>
+                </a>
+                <button class="w-full mt-2 bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition">
+                    <span class="pt">Assinar</span>
+                    <span class="en hidden">Subscribe</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- CMS: HOME - WELCOME SECTION -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 p-8">
+                        <h2 class="text-2xl font-bold text-purple-600 mb-4">
+                            <span class="pt">Bem-vinda ao FemGuide!</span>
+                            <span class="en hidden">Welcome to FemGuide!</span>
+                        </h2>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">FemGuide é um espaço dedicado para mulheres trans e femboys explorarem feminilidade, autoestima e pertencimento. Aqui você encontra apoio, dicas práticas e histórias reais para sua jornada.</span>
+                            <span class="en hidden">FemGuide is a space dedicated to trans women and femboys exploring femininity, self-esteem, and belonging. Find support, practical tips, and real stories for your journey.</span>
+                        </p>
+                        <p class="text-gray-700 mb-6">
+                            <span class="pt">90% do conteúdo é voltado para mulheres trans, com 10% dedicado a femboys explorando feminilidade.</span>
+                            <span class="en hidden">90% of content is for trans women, with 10% dedicated to femboys exploring femininity.</span>
+                        </p>
+                        <a href="./guia-estilo.html" class="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                            <span class="pt">Comece sua jornada</span>
+                            <span class="en hidden">Start your journey</span>
+                        </a>
+                    </div>
+                    <div class="md:w-1/2">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Mulher trans sorrindo com confiança, expressando sua feminilidade" 
+                             class="w-full h-full object-cover"
+                             loading="lazy"
+                             width="1200"
+                             height="800">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CMS: HOME - FEATURED CATEGORIES -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <span class="pt">Explore Nossas Categorias</span>
+                <span class="en hidden">Explore Our Categories</span>
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Style -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="Produtos de maquiagem e beleza" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-paint-brush text-purple-600 mr-2"></i>
+                            <h3 class="text-xl font-bold text-purple-600">
+                                <span class="pt">Estilo & Beleza</span>
+                                <span class="en hidden">Style & Beauty</span>
+                            </h3>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Dicas de moda, maquiagem, cuidados com a pele e cabelo para realçar sua beleza única.</span>
+                            <span class="en hidden">Fashion tips, makeup, skin and hair care to enhance your unique beauty.</span>
+                        </p>
+                        <a href="./guia-estilo.html" class="text-purple-600 font-medium hover:text-purple-800">
+                            <span class="pt">Ver posts →</span>
+                            <span class="en hidden">View posts →</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Behavior -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=776&q=80" alt="Mulher com postura confiante" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-walking text-purple-600 mr-2"></i>
+                            <h3 class="text-xl font-bold text-purple-600">
+                                <span class="pt">Comportamento</span>
+                                <span class="en hidden">Behavior</span>
+                            </h3>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Postura, linguagem corporal, comunicação e socialização para expressar sua feminilidade com confiança.</span>
+                            <span class="en hidden">Posture, body language, communication and socialization to express your femininity with confidence.</span>
+                        </p>
+                        <a href="./comportamento.html" class="text-purple-600 font-medium hover:text-purple-800">
+                            <span class="pt">Ver posts →</span>
+                            <span class="en hidden">View posts →</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Well-being -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1498758536662-35b82cd15e29?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="Pessoa meditando em ambiente tranquilo" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-heart text-purple-600 mr-2"></i>
+                            <h3 class="text-xl font-bold text-purple-600">
+                                <span class="pt">Bem-estar</span>
+                                <span class="en hidden">Well-being</span>
+                            </h3>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Cuidados com a saúde mental, autoestima e recursos para uma jornada de gênero mais saudável e feliz.</span>
+                            <span class="en hidden">Mental health care, self-esteem and resources for a healthier, happier gender journey.</span>
+                        </p>
+                        <a href="./bem-estar.html" class="text-purple-600 font-medium hover:text-purple-800">
+                            <span class="pt">Ver posts →</span>
+                            <span class="en hidden">View posts →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CMS: HOME - POPULAR POSTS -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <span class="pt">Postagens Populares</span>
+                <span class="en hidden">Popular Posts</span>
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Post 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-pink-100 text-pink-800 text-xs font-medium px-2.5 py-0.5 rounded">Estilo</span>
+                            <span class="text-gray-500 text-sm ml-2">5 min <span class="pt">leitura</span><span class="en hidden">read</span></span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">
+                            <span class="pt">Como montar um kit básico de maquiagem</span>
+                            <span class="en hidden">How to build a basic makeup kit</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Produtos essenciais para quem está começando.</span>
+                            <span class="en hidden">Essential products for beginners.</span>
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="./guia-estilo.html" class="text-purple-600 font-medium hover:text-purple-800">
+                                <span class="pt">Ler mais →</span>
+                                <span class="en hidden">Read more →</span>
+                            </a>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Curtir"><i class="far fa-heart"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Salvar"><i class="far fa-bookmark"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Compartilhar"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Post 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">Comportamento</span>
+                            <span class="text-gray-500 text-sm ml-2">7 min <span class="pt">leitura</span><span class="en hidden">read</span></span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">
+                            <span class="pt">Como andar e sentar com mais elegância</span>
+                            <span class="en hidden">How to walk and sit more elegantly</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Dicas simples de postura que fazem toda a diferença na sua expressão feminina.</span>
+                            <span class="en hidden">Simple posture tips that make all the difference in your feminine expression.</span>
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="./comportamento.html" class="text-purple-600 font-medium hover:text-purple-800">
+                                <span class="pt">Ler mais →</span>
+                                <span class="en hidden">Read more →</span>
+                            </a>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Curtir"><i class="far fa-heart"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Salvar"><i class="far fa-bookmark"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Compartilhar"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Post 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden post-card transition duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Bem-estar</span>
+                            <span class="text-gray-500 text-sm ml-2">10 min <span class="pt">leitura</span><span class="en hidden">read</span></span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">
+                            <span class="pt">Construindo autoestima na jornada de expressão de gênero</span>
+                            <span class="en hidden">Building self-esteem in gender expression journey</span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">
+                            <span class="pt">Estratégias para cultivar amor-próprio e confiança enquanto você explora sua feminilidade.</span>
+                            <span class="en hidden">Strategies to cultivate self-love and confidence as you explore your femininity.</span>
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="./bem-estar.html" class="text-purple-600 font-medium hover:text-purple-800">
+                                <span class="pt">Ler mais →</span>
+                                <span class="en hidden">Read more →</span>
+                            </a>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Curtir"><i class="far fa-heart"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Salvar"><i class="far fa-bookmark"></i></button>
+                                <button class="text-gray-500 hover:text-purple-600" aria-label="Compartilhar"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="./recursos.html" class="bg-white border border-purple-600 text-purple-600 px-6 py-2 rounded-full hover:bg-purple-50 transition">
+                    <span class="pt">Ver todas as postagens</span>
+                    <span class="en hidden">View all posts</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- CMS: HOME - COMMUNITY STORIES -->
+        <section class="mb-12 bg-purple-50 rounded-xl p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <span class="pt">Histórias da Comunidade</span>
+                <span class="en hidden">Community Stories</span>
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <!-- Story 1 -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Foto de perfil da Maria Clara" class="w-12 h-12 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-medium">Maria Clara</h4>
+                            <p class="text-gray-500 text-sm">
+                                <span class="pt">19 anos • São Paulo</span>
+                                <span class="en hidden">19 years • São Paulo</span>
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic mb-4">
+                        <span class="pt">"O FemGuide me ajudou a encontrar meu estilo pessoal e me aceitar como sou. As dicas de moda para corpos diferentes foram um divisor de águas pra mim!"</span>
+                        <span class="en hidden">"FemGuide helped me find my personal style and accept myself as I am. The fashion tips for different bodies were a game changer for me!"</span>
+                    </p>
+                    <div class="flex space-x-2">
+                        <button class="text-gray-500 hover:text-purple-600"><i class="far fa-heart"></i> <span class="text-sm">42</span></button>
+                        <button class="text-gray-500 hover:text-purple-600 ml-2"><i class="far fa-comment"></i> <span class="text-sm">8</span></button>
+                    </div>
+                </div>
+                <!-- Story 2 -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Foto de perfil da Sophie" class="w-12 h-12 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-medium">Sophie</h4>
+                            <p class="text-gray-500 text-sm">
+                                <span class="pt">22 anos • Rio de Janeiro</span>
+                                <span class="en hidden">22 years • Rio de Janeiro</span>
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic mb-4">
+                        <span class="pt">"Como garota trans no início da transição, os recursos de voz feminina e postura me deram a confiança que eu precisava para me apresentar ao mundo como realmente sou."</span>
+                        <span class="en hidden">"As a trans girl early in transition, the feminine voice and posture resources gave me the confidence I needed to present myself to the world as I truly am."</span>
+                    </p>
+                    <div class="flex space-x-2">
+                        <button class="text-gray-500 hover:text-purple-600"><i class="far fa-heart"></i> <span class="text-sm">56</span></button>
+                        <button class="text-gray-500 hover:text-purple-600 ml-2"><i class="far fa-comment"></i> <span class="text-sm">12</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="./historias.html" class="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                    <span class="pt">Compartilhe sua história</span>
+                    <span class="en hidden">Share your story</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- CMS: HOME - NEWSLETTER -->
+        <section class="mb-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-xl p-8 text-white">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-4">
+                    <span class="pt">Assine nossa newsletter</span>
+                    <span class="en hidden">Subscribe to our newsletter</span>
+                </h2>
+                <p class="mb-6">
+                    <span class="pt">Receba dicas exclusivas, novos conteúdos e inspiração diretamente no seu e-mail.</span>
+                    <span class="en hidden">Get exclusive tips, new content and inspiration straight to your email.</span>
+                </p>
+                <form class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+                    <input type="email" placeholder="Seu e-mail" class="flex-grow px-4 py-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-300" required>
+                    <button type="submit" class="bg-white text-purple-600 px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition">
+                        <span class="pt">Assinar</span>
+                        <span class="en hidden">Subscribe</span>
+                    </button>
+                </form>
+                <p class="text-sm mt-4 opacity-80">
+                    <span class="pt">Respeitamos sua privacidade. Nunca enviaremos spam.</span>
+                    <span class="en hidden">We respect your privacy. Never any spam.</span>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- INCLUDE FOOTER -->
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Sobre</span>
+                        <span class="en hidden">About</span>
+                    </h3>
+                    <p class="text-gray-300 mb-4">
+                        <span class="pt">FemGuide é um espaço seguro e acolhedor para femboys e garotas trans explorarem sua expressão feminina.</span>
+                        <span class="en hidden">FemGuide is a safe and welcoming space for femboys and trans girls to explore their feminine expression.</span>
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="https://instagram.com/femguide" class="text-gray-300 hover:text-white" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="https://twitter.com/femguide" class="text-gray-300 hover:text-white" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="https://pinterest.com/femguide" class="text-gray-300 hover:text-white" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-pinterest text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Links Rápidos</span>
+                        <span class="en hidden">Quick Links</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./index.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Início</span>
+                            <span class="en hidden">Home</span>
+                        </a></li>
+                        <li><a href="./guia-estilo.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Guia de Estilo</span>
+                            <span class="en hidden">Style Guide</span>
+                        </a></li>
+                        <li><a href="./comportamento.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Comportamento</span>
+                            <span class="en hidden">Behavior</span>
+                        </a></li>
+                        <li><a href="./bem-estar.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Bem-estar</span>
+                            <span class="en hidden">Well-being</span>
+                        </a></li>
+                        <li><a href="./historias.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Histórias</span>
+                            <span class="en hidden">Stories</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <!-- Resources -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Recursos</span>
+                        <span class="en hidden">Resources</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./recursos.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Todos os Recursos</span>
+                            <span class="en hidden">All Resources</span>
+                        </a></li>
+                        <li><a href="./termos.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Termos de Uso</span>
+                            <span class="en hidden">Terms of Use</span>
+                        </a></li>
+                        <li><a href="./privacidade.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Política de Privacidade</span>
+                            <span class="en hidden">Privacy Policy</span>
+                        </a></li>
+                        <li><a href="./acessibilidade.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Acessibilidade</span>
+                            <span class="en hidden">Accessibility</span>
+                        </a></li>
+                        <li><a href="./glossario.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Glossário</span>
+                            <span class="en hidden">Glossary</span>
+                        </a></li>
+                        <li><a href="./faq.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">FAQ</span>
+                            <span class="en hidden">FAQ</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4">
+                        <span class="pt">Contato</span>
+                        <span class="en hidden">Contact</span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="./contato.html" class="text-gray-300 hover:text-white">
+                            <span class="pt">Fale Conosco</span>
+                            <span class="en hidden">Contact Us</span>
+                        </a></li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-2 text-purple-400"></i>
+                            <span>contato@femguide.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-purple-400"></i>
+                            <span>
+                                <span class="pt">São Paulo, Brasil</span>
+                                <span class="en hidden">São Paulo, Brazil</span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>
+                    <span class="pt">© 2025 FemGuide. Todos os direitos reservados. <a href="./privacidade.html" class="text-purple-400 hover:underline">Política de Privacidade</a></span>
+                    <span class="en hidden">© 2025 FemGuide. All rights reserved. <a href="./privacidade.html" class="text-purple-400 hover:underline">Privacy Policy</a></span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Banner -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 hidden" role="dialog" aria-labelledby="cookie-heading">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between">
+            <h2 id="cookie-heading" class="sr-only">Cookie Notice</h2>
+            <p class="mb-4 md:mb-0">
+                <span class="pt">Usamos cookies para melhorar sua experiência. Ao continuar navegando, você concorda com nossa <a href="./privacidade.html" class="text-purple-400 hover:underline">Política de Cookies</a>.</span>
+                <span class="en hidden">We use cookies to improve your experience. By continuing to browse, you agree to our <a href="./privacidade.html" class="text-purple-400 hover:underline">Cookie Policy</a>.</span>
+            </p>
+            <button onclick="acceptCookies()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 min-w-[44px] min-h-[44px]">
+                <span class="pt">Aceitar</span>
+                <span class="en hidden">Accept</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode functionality
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+            document.getElementById('dark-mode-toggle').setAttribute('aria-pressed', isDark);
+        }
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('dark-mode-toggle').setAttribute('aria-pressed', 'true');
+        }
+
+        // Toggle text size
+        let textLarge = false;
+        function toggleTextSize() {
+            textLarge = !textLarge;
+            document.body.style.fontSize = textLarge ? '1.15em' : '';
+            document.getElementById('text-size-toggle').setAttribute('aria-expanded', textLarge);
+        }
+
+        // Cookie banner display logic
+        function acceptCookies() {
+            document.getElementById('cookie-banner').style.display = 'none';
+            localStorage.setItem('cookiesAccepted', 'true');
+        }
+        if (!localStorage.getItem('cookiesAccepted')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const isHidden = menu.classList.toggle('hidden');
+            document.querySelector('[aria-controls="mobile-menu"]').setAttribute('aria-expanded', !isHidden);
+        }
+
+        // Função para trocar idioma
+        function changeLanguage(lang) {
+            document.getElementById('current-lang').textContent = lang.toUpperCase();
+            document.querySelectorAll('.pt, .en').forEach(el => {
+                if (el.classList.contains(lang)) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            localStorage.setItem('preferredLanguage', lang);
+            document.getElementById('lang-dropdown').classList.add('hidden');
+            
+            // Redirect to English version if English is selected
+            if (lang === 'en') {
+                setTimeout(() => {
+                    window.location.href = './en/index.html';
+                }, 500);
+            }
+        }
+
+        // MENU DE IDIOMA
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('lang-switcher');
+            const dropdown = document.getElementById('lang-dropdown');
+            const menu = document.getElementById('language-menu');
+            
+            // Verificar idioma salvo
+            const savedLang = localStorage.getItem('preferredLanguage') || 'pt';
+            if (savedLang === 'pt') {
+                changeLanguage(savedLang);
+            }
+
+            switcher.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isHidden = dropdown.classList.toggle('hidden');
+                switcher.setAttribute('aria-expanded', !isHidden);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    switcher.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
