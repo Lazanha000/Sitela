@@ -193,7 +193,13 @@ function colunas(s: WorldState): Draft[] {
   const social: string[] = [];
   social.push(`Com a inflação em ${pct(i.ipca_12m, 1)} em 12 meses, quem mais sente é a família de baixa renda, que gasta quase tudo com comida, energia e transporte.`);
   social.push(`O desemprego estimado está em ${pct(i.desemprego)}; a recuperação ainda é desigual entre regiões.`);
-  social.push(i.saude_fila > 105 ? `A fila de procedimentos no SUS segue crescendo (índice ${i.saude_fila.toFixed(0)}): cortes de custeio não aparecem no anúncio, mas aparecem no atendimento.` : 'A fila do SUS parou de crescer — resta saber se o ritmo se sustenta.');
+  const filaAntes = s.serie.saude_fila?.[s.turn - 2 + SERIE_OFFSET];
+  const filaSobe = typeof filaAntes === 'number' ? i.saude_fila > filaAntes + 0.1 : true;
+  social.push(
+    filaSobe
+      ? `A fila de procedimentos no SUS continua crescendo (índice ${i.saude_fila.toFixed(0)}; janeiro = 100). Cortes de custeio não aparecem no anúncio, aparecem no atendimento.`
+      : `A fila do SUS recuou no último mês (índice ${i.saude_fila.toFixed(0)}). A dúvida é se o ritmo se sustenta.`,
+  );
   return [
     { editoria: 'opiniao', tipo: 'editorial', provenance: 'contrafactual', importancia: 2, titulo: 'A conta chega', coluna: 'Contas em Dia (coluna fiscal)', linha_fina: 'Perspectiva: responsabilidade fiscal', corpo: fiscal },
     { editoria: 'opiniao', tipo: 'editorial', provenance: 'contrafactual', importancia: 2, titulo: 'O país que não cabe na média', coluna: 'Vida Real (coluna social)', linha_fina: 'Perspectiva: distribuição e serviços', corpo: social },

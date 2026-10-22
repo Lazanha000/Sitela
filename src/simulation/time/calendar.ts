@@ -17,7 +17,8 @@ export const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'a
 
 export function turnToDate(turn: number): GameDate {
   const m = CAMPAIGN_START.month - 1 + turn;
-  return { year: CAMPAIGN_START.year + Math.floor(m / 12), month: (m % 12) + 1 };
+  // módulo positivo: turnos negativos (2021) também precisam funcionar
+  return { year: CAMPAIGN_START.year + Math.floor(m / 12), month: (((m % 12) + 12) % 12) + 1 };
 }
 
 export function dateToTurn(d: GameDate): number {

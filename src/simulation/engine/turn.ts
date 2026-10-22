@@ -92,7 +92,7 @@ export function advanceTurn(prev: WorldState): WorldState {
   for (const k of ALL_INDICATORS) pushSerie(s, k, resolvedTurn, s.ind[k]);
 
   const alertas: string[] = [];
-  if (s.ind.teto_folga < 0) alertas.push(`Despesa projetada acima do teto em R$ ${(-s.ind.teto_folga).toFixed(1)} bi: haverá bloqueio no próximo relatório bimestral.`);
+  if (s.ind.teto_folga < 0) alertas.push(`Despesa projetada acima do teto em R$ ${(-s.ind.teto_folga).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} bi: haverá bloqueio no próximo relatório bimestral.`);
   if (s.ind.pc_negociacao < 15) alertas.push('Capacidade de negociação baixa: novas iniciativas e táticas ficam limitadas.');
   if (s.ind.risco_pais > 280) alertas.push('Prêmio de risco elevado: câmbio e juros sob pressão.');
   if (s.ind.tensao_institucional > 70) alertas.push('Tensão institucional muito alta.');

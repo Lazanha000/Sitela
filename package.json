@@ -11,13 +11,15 @@
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "simulate": "vite-node scripts/simulate.ts"
+    "simulate": "vite-node scripts/simulate.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/node": "^22.19.1",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",

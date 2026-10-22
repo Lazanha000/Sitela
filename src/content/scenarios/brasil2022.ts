@@ -177,7 +177,7 @@ export function buildInitialState(opts: NewCampaignOptions = {}): WorldState {
   s.ind.aval_negativa = op.neg;
   s.ind.pc_apoio_social = Math.max(0, 50 + 0.9 * op.net);
   s.ind.coop_federativa = REGION_IDS.reduce((a, r) => a + REGIONS[r].pop * s.regions[r].governadores.cooperacao, 0);
-  s.ind.teto_folga = TETO_2022 - projetarTeto(s);
+  s.ind.teto_folga = TETO_2022 - projetarTeto(s, true);
 
   // Proposições já em tramitação no início de 2022 (autoria parlamentar).
   const iniciais: { defId: string; type: 'PEC' | 'PL'; stage: 'ccj_senado' | 'comissoes_senado' }[] = [

@@ -35,9 +35,17 @@ describe('início e relógio', () => {
     const s = newCampaign({ seed: 'x' });
     expect(s.turn).toBe(0);
     expect(turnToDate(s.turn)).toEqual({ year: 2022, month: 1 });
+    expect(turnToDate(-1)).toEqual({ year: 2021, month: 12 });
+    expect(turnToDate(12)).toEqual({ year: 2023, month: 1 });
     expect(s.status).toBe('em_andamento');
     expect(s.ind.selic).toBe(9.25);
     expect(s.ind.ipca_12m).toBeCloseTo(10.06, 2);
+  });
+
+  it('a folga inicial do teto é coerente com a do fechamento de janeiro (regressão)', () => {
+    const s0 = newCampaign({ seed: 'teto' });
+    const s1 = advanceTurn(s0);
+    expect(Math.abs(s1.ind.teto_folga - s0.ind.teto_folga)).toBeLessThan(2);
   });
 
   it('a campanha termina após dezembro de 2022 (posse em 1º/jan/2023)', () => {

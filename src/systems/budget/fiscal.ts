@@ -50,16 +50,21 @@ export function allocateDiscretionary(s: WorldState, demandas: { id: string; val
 }
 
 /** Despesa sujeita ao teto projetada para o restante do ano. */
-export function projetarTeto(s: WorldState): number {
+/**
+ * `incluirMesAtual`: no início de um mês (antes do fechamento) a despesa do
+ * mês corrente ainda não está em `despesaTetoAno` e precisa ser projetada.
+ */
+export function projetarTeto(s: WorldState, incluirMesAtual = false): number {
   const t = s.turn;
   const fimAno = 11 + 12 * Math.floor(t / 12);
+  const primeiro = incluirMesAtual ? t : t + 1;
   let futuro = 0;
-  for (let m = t + 1; m <= fimAno; m++) futuro += obrigatorias(m);
+  for (let m = primeiro; m <= fimAno; m++) futuro += obrigatorias(m);
   for (const p of s.policies) {
     const def = POLICY_BY_ID[p.defId];
     if (def.financiamento !== 'obrigatoria_teto') continue;
     if (!(p.status === 'execucao' || p.status === 'preparacao')) continue;
-    const inicio = Math.max(t + 1, def.inicioMinimo ? isoMonthToTurn(def.inicioMinimo) : 0, p.executionStartTurn ?? 0);
+    const inicio = Math.max(primeiro, def.inicioMinimo ? isoMonthToTurn(def.inicioMinimo) : 0, p.executionStartTurn ?? 0);
     for (let m = inicio; m <= fimAno; m++) futuro += def.custoMensal * p.custoFator;
   }
   const discRestante = Math.max(0, s.fiscal.discricionarioAno - s.fiscal.bloqueio - s.fiscal.discricionarioGasto);
