@@ -1,6 +1,25 @@
 # Revolução — jogo de estratégia no Brasil
 
-Fase atual: escolha da direção de arte. Em `prototipos/` há cinco protótipos visuais,
+## Jogo final: `jogo/`
+
+Abra `jogo/index.html` no navegador. Não precisa de servidor, instalação nem build.
+Direção de arte escolhida: **Cinejornal** (protótipo 1).
+
+- `js/geo.js` — geografia Natural Earth pré-processada
+- `js/mundo.js` — grade de território, adjacência, rios-fronteira, suprimento, contornos, câmera
+- `js/regras.js` — estado da partida, ações políticas, ordens e combate, governo, rivais, eventos, teses, finais
+- `js/render.js` — mapa no estilo cinejornal e a animação do turno
+- `js/ia.js` — IA opcional (desligada por padrão) com vários provedores e modo manual
+- `js/ui.js` — telas, criação da organização, fichas, modais, salvamento
+- `js/bandeira.js` — construtor de bandeiras em SVG
+
+A IA é opcional. Chamadas a provedores externos funcionam quando o jogo é aberto
+pelo arquivo local ou por um site próprio (ex.: GitHub Pages); dentro do visualizador
+de artifacts do Claude só o modo Manual (copiar e colar) funciona.
+
+## Protótipos de arte: `prototipos/`
+
+Em `prototipos/` há cinco protótipos visuais,
 todos com a mesma geografia real e o mesmo cenário de exemplo:
 
 | # | Arquivo | Direção |
