@@ -1,0 +1,118 @@
+<title>Revolução: Direções de Arte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Conceito: mesa de escolha — cinco provas de arte lado a lado, como pranchas de um estúdio, sobre fundo escuro de sala de projeção */
+:root {
+  --fundo: #15130f; --prancha: #201d18; --linha: #3a342b; --texto: #efe6d2; --texto2: #b3a78f; --vermelho: #c8323c; --mais: #8fc46a; --menos: #e48a6d;
+  --f-tit: 'Oswald', 'Arial Narrow', sans-serif; --f-texto: 'Source Serif 4', Georgia, serif;
+  color-scheme: dark;
+}
+html { background: var(--fundo); }
+body { background: var(--fundo); color: var(--texto); font-family: var(--f-texto); font-size: 16px; line-height: 1.55; padding-block: 28px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+header { display: grid; gap: 10px; border-bottom: 1px solid var(--linha); padding-bottom: 22px; }
+.olho { font: 500 12px var(--f-tit); letter-spacing: .32em; text-transform: uppercase; color: var(--vermelho); }
+h1 { font: 700 clamp(30px, 5vw, 52px)/1.02 var(--f-tit); text-transform: uppercase; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+header p { margin: 0; max-width: 68ch; color: var(--texto2); }
+header p b { color: var(--texto); font-weight: 600; }
+.comum { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.comum span { font: 500 12px var(--f-tit); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--linha); padding: 5px 9px; color: var(--texto2); }
+.lista { display: grid; gap: 22px; }
+article { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0; background: var(--prancha); border: 1px solid var(--linha); }
+article a.thumb { display: block; position: relative; overflow: hidden; border-right: 1px solid var(--linha); background: #000; }
+article a.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16 / 10; transition: transform .4s ease; }
+article a.thumb:hover img, article a.thumb:focus-visible img { transform: scale(1.03); }
+article a.thumb:focus-visible { outline: 3px solid var(--vermelho); outline-offset: -3px; }
+.num { position: absolute; left: 12px; top: 12px; width: 40px; height: 40px; border-radius: 50%; background: var(--texto); color: var(--fundo); display: grid; place-items: center; font: 700 20px var(--f-tit); }
+.info { padding: 20px 22px 22px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.info h2 { margin: 0; font: 600 26px/1.05 var(--f-tit); text-transform: uppercase; letter-spacing: .03em; }
+.info .conceito { margin: 0; font-style: italic; color: var(--texto2); }
+dl { margin: 0; display: grid; grid-template-columns: 92px 1fr; gap: 6px 12px; font-size: 14.5px; }
+dt { font: 500 11px var(--f-tit); letter-spacing: .16em; text-transform: uppercase; color: var(--texto2); padding-top: 3px; }
+dd { margin: 0; }
+.pros { display: grid; gap: 4px; font-size: 14.5px; margin: 0; padding: 0; list-style: none; }
+.pros li { padding-left: 20px; position: relative; }
+.pros li::before { position: absolute; left: 0; top: 0; font: 600 15px var(--f-tit); }
+.pros li.m::before { content: '+'; color: var(--mais); } .pros li.n::before { content: '−'; color: var(--menos); }
+.abrir { justify-self: start; font: 600 14px var(--f-tit); letter-spacing: .18em; text-transform: uppercase; color: #fff; background: var(--vermelho); text-decoration: none; padding: 10px 16px; }
+.abrir:hover { background: #dc3c46; } .abrir:focus-visible { outline: 2px solid var(--texto); outline-offset: 3px; }
+footer { border-top: 1px solid var(--linha); padding-top: 18px; color: var(--texto2); font-size: 14px; display: grid; gap: 8px; }
+footer p { margin: 0; max-width: 80ch; }
+@media (max-width: 820px) { article { grid-template-columns: 1fr; } article a.thumb { border-right: 0; border-bottom: 1px solid var(--linha); } dl { grid-template-columns: 1fr; gap: 2px; } dt { padding-top: 8px; } }
+@media (prefers-reduced-motion: reduce) { article a.thumb img { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="olho">Jogo de revolução no Brasil · provas de arte</div>
+    <h1>Cinco direções de arte para escolher</h1>
+    <p>Os cinco protótipos usam <b>a mesma geografia real</b> (Natural Earth: países vizinhos, estados, rios, serras e cidades) e <b>o mesmo cenário de exemplo</b>: a UPR avança no Tocantins em pinça, mantém um bolsão governista cercado em Imperatriz, resiste no Recife e tem um destacamento isolado no Tapajós. Só muda a arte, então dá para comparar direto.</p>
+    <p>Em todos você pode arrastar e dar zoom no mapa, clicar em unidades e estados, e avançar o turno para ver as frentes se moverem.</p>
+    <div class="comum"><span>Sem IA</span><span>Frentes animadas</span><span>Cerco e suprimento</span><span>Pinça e contra-ataque</span><span>Fortificações</span></div>
+  </header>
+
+  <div class="lista">
+    <article>
+      <a class="thumb" href="p1-cinejornal.html"><img src="miniaturas/p1-cinejornal.jpg" alt="Prévia do protótipo Cinejornal: mapa bege com território vermelho, setas grossas e explosões" loading="lazy"><span class="num">1</span></a>
+      <div class="info">
+        <h2>Cinejornal</h2>
+        <p class="conceito">Documentário de guerra em película, o mais próximo da sua imagem de referência.</p>
+        <dl><dt>Mapa</dt><dd>Atlas bege, mar azul-acinzentado, território em vermelho sólido, setas largas e explosões vermelhas.</dd><dt>Interface</dt><dd>Barras de cinema, data em cartela, narração em legenda, grão de filme e vinheta.</dd><dt>Tipos</dt><dd>Oswald e serifa itálica de narrador.</dd></dl>
+        <ul class="pros"><li class="m">É a sua referência visual e passa sensação de história sendo contada.</li><li class="n">A interface minimalista comporta pouca informação. Com muitos sistemas (economia, política, diplomacia), vai precisar de painéis que quebram o clima de filme.</li></ul>
+        <a class="abrir" href="p1-cinejornal.html">Abrir protótipo 1</a>
+      </div>
+    </article>
+
+    <article>
+      <a class="thumb" href="p2-estado-maior.html"><img src="miniaturas/p2-estado-maior.jpg" alt="Prévia do protótipo Estado-Maior: carta topográfica em papel com símbolos militares azuis e vermelhos" loading="lazy"><span class="num">2</span></a>
+      <div class="info">
+        <h2>Carta do Estado-Maior</h2>
+        <p class="conceito">Carta topográfica sobre a mesa do comando, riscada a lápis de cera.</p>
+        <dl><dt>Mapa</dt><dd>Papel com quadrícula e coordenadas, linhas d'água na costa, serras em hachura, território hachurado, convenção militar real: amigo azul, inimigo vermelho, símbolos padrão OTAN com escalão.</dd><dt>Interface</dt><dd>Ordem de operações datilografada numa prancheta, carimbo SECRETO, anotações à mão no mapa.</dd><dt>Tipos</dt><dd>Máquina de escrever, mono técnica e caligrafia.</dd></dl>
+        <ul class="pros"><li class="m">É o que mais reforça a estratégia militar que você pediu: pinça, cerco, linha fortificada e suprimento ficam legíveis.</li><li class="n">Pode parecer técnico e frio para quem não conhece os símbolos. A parte política da organização tem menos espaço visual.</li></ul>
+        <a class="abrir" href="p2-estado-maior.html">Abrir protótipo 2</a>
+      </div>
+    </article>
+
+    <article>
+      <a class="thumb" href="p3-sala-de-guerra.html"><img src="miniaturas/p3-sala-de-guerra.jpg" alt="Prévia do protótipo Sala de Guerra: mapa vetorial verde brilhante sobre preto com painéis de terminal" loading="lazy"><span class="num">3</span></a>
+      <div class="info">
+        <h2>Sala de Guerra</h2>
+        <p class="conceito">Terminal vetorial de comando: fósforo verde, radar varrendo, ordens digitadas.</p>
+        <dl><dt>Mapa</dt><dd>Costas e fronteiras como vetores brilhantes, território em matriz de pontos, combates como pings de radar, setas tracejadas em movimento.</dd><dt>Interface</dt><dd>Medidores em barras de bloco, log de despachos, linha de comando que aceita ordens (experimente digitar "turno" ou "zoom palmas").</dd><dt>Tipos</dt><dd>VT323 e Share Tech Mono.</dd></dl>
+        <ul class="pros"><li class="m">Comporta muita informação e é o mais leve de rodar. A linha de comando combina bem com a IA opcional.</li><li class="n">É o que menos parece um mapa bonito e o menos brasileiro. Vai na contramão do "parecer um mapa de verdade".</li></ul>
+        <a class="abrir" href="p3-sala-de-guerra.html">Abrir protótipo 3</a>
+      </div>
+    </article>
+
+    <article>
+      <a class="thumb" href="p4-grande-estrategia.html"><img src="miniaturas/p4-grande-estrategia.jpg" alt="Prévia do protótipo Grande Estratégia: terreno com relevo e biomas, fichas de tropas e painéis escuros" loading="lazy"><span class="num">4</span></a>
+      <div class="info">
+        <h2>Grande Estratégia</h2>
+        <p class="conceito">Jogo de estratégia moderno: terreno pintado, painéis de vidro escuro com friso dourado.</p>
+        <dl><dt>Mapa</dt><dd>Biomas reais (Amazônia, cerrado, caatinga, pampa), relevo sombreado com Andes nevados, fichas de tropa com bandeira, barras de força e moral, chance de vitória em cada batalha.</dd><dt>Interface</dt><dd>Barra de recursos, alertas, painel de unidade com ordens, minimapa, controle de velocidade e quatro modos de mapa (político, terreno, suprimento, apoio).</dd><dt>Tipos</dt><dd>Barlow Condensed e Barlow.</dd></dl>
+        <ul class="pros"><li class="m">É o que mais parece videogame e o que melhor escala para muitos sistemas (modos de mapa, painéis, alertas).</li><li class="n">É o mais "de gênero": lembra outros jogos de estratégia e tem menos identidade própria. Também é o mais pesado de renderizar.</li></ul>
+        <a class="abrir" href="p4-grande-estrategia.html">Abrir protótipo 4</a>
+      </div>
+    </article>
+
+    <article>
+      <a class="thumb" href="p5-cordel.html"><img src="miniaturas/p5-cordel.jpg" alt="Prévia do protótipo Cordel: mapa em xilogravura preta e vermelha sobre papel pardo, com folheto de versos" loading="lazy"><span class="num">5</span></a>
+      <div class="info">
+        <h2>Cordel</h2>
+        <p class="conceito">Folheto de cordel em xilogravura: papel pardo, tinta preta e vermelha, guerra contada em sextilhas.</p>
+        <dl><dt>Mapa</dt><dd>Mar em ondas entalhadas, serras como picos gravados, território em tinta vermelha com falha de impressão, setas talhadas, tropas como carimbos.</dd><dt>Interface</dt><dd>Capa de folheto com xilogravura, versos que mudam a cada turno, almanaque de recursos, botão "virar a folha".</dd><dt>Tipos</dt><dd>Alfa Slab One e Bitter.</dd></dl>
+        <ul class="pros"><li class="m">Tem a identidade mais original e mais brasileira, e combina com o tema de revolução popular.</li><li class="n">Com duas tintas é difícil distinguir muitas facções e ler a situação tática rápido. Os versos a cada turno exigiriam IA ou muito texto escrito à mão.</li></ul>
+        <a class="abrir" href="p5-cordel.html">Abrir protótipo 5</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <p>Dá para misturar: por exemplo, o mapa do 1 com a interface e os modos de mapa do 4, ou os símbolos militares do 2 dentro do 4. Se for misturar, diga qual parte de cada um você quer.</p>
+    <p>Geografia: Natural Earth (domínio público). Cenário, organizações e números são fictícios, só para demonstração.</p>
+  </footer>
+</div>

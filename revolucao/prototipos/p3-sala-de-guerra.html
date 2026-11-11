@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sala de Guerra UPR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
+<style>
+/* Conceito: terminal vetorial de comando — fósforo verde sobre preto, radar varrendo o teatro, linha de comando para dar ordens */
+:root {
+  --fundo: #020b08; --fosforo: #46f59a; --fosforo-dim: #1d6b47; --ambar: #ffb020; --alerta: #ff4a3a; --roxo: #d26bff; --texto: #b9ffd8;
+  --f-grande: 'VT323', 'Courier New', monospace; --f-mono: 'Share Tech Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--fundo); color: var(--texto); font-family: var(--f-mono); }
+#tela { position: fixed; inset: 0; display: grid; grid-template-columns: 250px 1fr 290px; grid-template-rows: auto 1fr auto; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.painel { border: 1px solid var(--fosforo-dim); background: #03140d99; position: relative; padding: 10px 12px; min-width: 0; }
+.painel::before, .painel::after { content: ''; position: absolute; width: 10px; height: 10px; border: 2px solid var(--fosforo); }
+.painel::before { left: -2px; top: -2px; border-right: 0; border-bottom: 0; } .painel::after { right: -2px; bottom: -2px; border-left: 0; border-top: 0; }
+.rot { font-size: 11px; letter-spacing: .2em; color: var(--fosforo); text-transform: uppercase; opacity: .8; }
+header.painel { grid-column: 1 / -1; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+header h1 { font: 400 30px/1 var(--f-grande); color: var(--fosforo); margin: 0; letter-spacing: .06em; text-shadow: 0 0 8px #46f59a88; }
+header .meta { display: flex; gap: 18px; font-size: 12px; color: var(--texto); flex-wrap: wrap; }
+header .meta b { color: var(--ambar); font-weight: 400; }
+header .acoes { margin-left: auto; display: flex; gap: 8px; }
+.cmd { font: 400 20px/1 var(--f-grande); background: transparent; color: var(--fosforo); border: 1px solid var(--fosforo); padding: 6px 12px; cursor: pointer; letter-spacing: .1em; text-decoration: none; display: inline-block; }
+.cmd:hover, .cmd:focus-visible { background: var(--fosforo); color: var(--fundo); outline: none; }
+.cmd.alerta { color: var(--ambar); border-color: var(--ambar); } .cmd.alerta:hover { background: var(--ambar); color: var(--fundo); }
+#esq { overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.medidor { font-size: 12px; display: grid; gap: 2px; }
+.medidor .barra { font-family: var(--f-grande); font-size: 18px; color: var(--fosforo); letter-spacing: -1px; white-space: nowrap; overflow: hidden; }
+.medidor .barra.ruim { color: var(--ambar); }
+.medidor .lin { display: flex; justify-content: space-between; color: var(--texto); }
+.medidor .lin b { color: var(--fosforo); font-weight: 400; font-variant-numeric: tabular-nums; }
+#mapa-wrap { position: relative; overflow: hidden; border: 1px solid var(--fosforo-dim); }
+canvas#mapa { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+.scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #0000 0 2px, #00000040 2px 3px); mix-blend-mode: multiply; }
+.hud { position: absolute; pointer-events: none; font-size: 11px; color: var(--fosforo); letter-spacing: .12em; }
+#coord { left: 10px; bottom: 8px; } #alvo { right: 10px; top: 8px; text-align: right; color: var(--ambar); }
+#dir { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+#log { flex: 1; overflow: hidden; font-size: 12px; line-height: 1.5; display: flex; flex-direction: column; justify-content: flex-end; min-height: 0; }
+#log p { margin: 0 0 6px; } #log .h { color: var(--ambar); } #log .a { color: var(--alerta); }
+#sel { min-height: 120px; font-size: 12px; line-height: 1.5; }
+#sel .nome { font: 400 22px/1.1 var(--f-grande); color: var(--ambar); }
+.ordens { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 8px; }
+.ordens button { background: transparent; border: 1px solid var(--fosforo-dim); color: var(--texto); font: 11px var(--f-mono); text-align: left; padding: 4px 6px; cursor: pointer; text-transform: uppercase; }
+.ordens button:hover { border-color: var(--fosforo); color: var(--fosforo); }
+footer.painel { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+footer label { color: var(--fosforo); font: 22px var(--f-grande); }
+footer input { flex: 1; background: transparent; border: 0; color: var(--ambar); font: 22px var(--f-grande); outline: none; caret-color: var(--ambar); min-width: 0; }
+footer .dica { font-size: 11px; color: var(--fosforo-dim); white-space: nowrap; }
+.zoom { position: absolute; right: 10px; bottom: 8px; display: flex; gap: 4px; }
+.zoom button { width: 30px; height: 30px; background: var(--fundo); border: 1px solid var(--fosforo); color: var(--fosforo); font: 20px var(--f-grande); cursor: pointer; }
+@media (max-width: 980px) { #tela { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto auto; } #esq { display: none; } #dir { max-height: 200px; } #log { display: none; } footer .dica { display: none; } }
+</style>
+</head>
+<body>
+<div id="tela">
+  <header class="painel">
+    <h1>UPR // COMANDO CENTRAL</h1>
+    <div class="meta"><span>TEATRO <b>BR-01</b></span><span>DATA <b id="data">MAR 2028</b></span><span>TURNO <b id="turnoN">T+14</b></span><span>DEFCON <b style="color:var(--alerta)">2</b></span></div>
+    <div class="acoes"><a class="cmd" href="index.html">[GALERIA]</a><button class="cmd alerta" id="turno">[EXECUTAR TURNO]</button></div>
+  </header>
+  <aside id="esq" class="painel"><div class="rot">Estado da organização</div><div id="medidores" style="display:grid;gap:10px"></div><div class="rot" style="margin-top:6px">Controle territorial</div><div id="ctrl" class="medidor"></div></aside>
+  <div id="mapa-wrap">
+    <canvas id="mapa" aria-label="Tela de radar do teatro de operações"></canvas>
+    <div class="scan"></div>
+    <div class="hud" id="coord">LAT --.-- LON --.--</div>
+    <div class="hud" id="alvo">OBJ. PRIMÁRIO: PALMAS<br>DIST. 48 KM</div>
+    <div class="zoom"><button id="zi" aria-label="Aproximar">+</button><button id="zo" aria-label="Afastar">-</button><button id="zf" aria-label="Enquadrar">#</button></div>
+  </div>
+  <aside id="dir">
+    <div class="painel" id="sel"><div class="rot">Seleção</div><div style="opacity:.7;margin-top:8px">Clique em uma unidade ou estado no mapa.</div></div>
+    <div class="painel" id="log"></div>
+  </aside>
+  <footer class="painel"><label for="cli">&gt;</label><input id="cli" autocomplete="off" spellcheck="false" placeholder="digite uma ordem: turno · zoom palmas · pinça · cerco · ajuda"><span class="dica">ENTER envia</span></footer>
+</div>
+<script src="base/geo.js"></script>
+<script src="base/cenario.js"></script>
+<script src="base/dados.js"></script>
+<script>
+(function () {
+  const C = Cenario, G = C.G, D = DADOS;
+  const F = '#46f59a', FD = '#1d6b47', AMB = '#ffb020', AL = '#ff4a3a', RX = '#d26bff';
+  const cv = document.getElementById('mapa'), ctx = cv.getContext('2d');
+  const countryPaths = G.countries.map(c => ({ ...c, path: new Path2D(c.d) }));
+  const riverPaths = G.rivers.filter(r => r.r <= 5).map(r => new Path2D(r.d));
+  const grat = G.graticule.map(g => ({ ...g, path: new Path2D(g.d) }));
+  const land = new Path2D(); countryPaths.forEach(c => land.addPath(c.path)); land.addPath(C.brasil);
+
+  // padrão de pontos (matriz) para áreas controladas
+  function dots(cor) { const c = document.createElement('canvas'); c.width = c.height = 5; const g = c.getContext('2d'); g.fillStyle = cor; g.fillRect(2, 2, 1.4, 1.4); return c; }
+  const dotA = dots(AMB), dotR = dots(RX);
+  let m1, m2, fr = {}, dirty = true;
+  function rebuild() { m1 = C.maskCanvas({ 1: [0, 0, 0, 255] }); m2 = C.maskCanvas({ 2: [0, 0, 0, 255] }); fr[1] = C.chains(C.contour(1)); fr[2] = C.chains(C.contour(2)); dirty = false; }
+  const off = document.createElement('canvas'), o = off.getContext('2d');
+  function dotLayer(mask, pat, alpha) {
+    off.width = cv.width; off.height = cv.height; o.setTransform(cam.dpr * cam.k, 0, 0, cam.dpr * cam.k, cam.dpr * cam.x, cam.dpr * cam.y);
+    o.imageSmoothingEnabled = false; o.drawImage(mask, 0, 0, C.GW * C.CELL, C.GH * C.CELL);
+    o.globalCompositeOperation = 'source-in'; o.setTransform(1, 0, 0, 1, 0, 0); o.fillStyle = o.createPattern(pat, 'repeat'); o.fillRect(0, 0, off.width, off.height); o.globalCompositeOperation = 'source-over';
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = alpha; ctx.drawImage(off, 0, 0); ctx.restore();
+  }
+
+  const t0 = performance.now(); let sel = null, mouse = null;
+  const cam = C.camera(cv, () => {}, { pad: [20, 20, 20, 20], focus: [300, 90, 980, 900], onClick: m => clickAt(m), onHover: m => { mouse = m; } });
+
+  function glow(c, b) { ctx.shadowColor = c; ctx.shadowBlur = b * cam.dpr; }
+  function line(pts) { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); }
+
+  function draw() {
+    if (dirty) rebuild();
+    const t = (performance.now() - t0) / 1000, k = cam.k;
+    cam.screen(ctx); ctx.fillStyle = '#020b08'; ctx.fillRect(0, 0, cam.w, cam.h);
+    cam.apply(ctx);
+    // retícula geográfica
+    ctx.strokeStyle = 'rgba(70,245,154,.12)'; ctx.lineWidth = 0.8 / k; grat.forEach(g => ctx.stroke(g.path));
+    // terra
+    ctx.fillStyle = '#041a12'; ctx.fill(land);
+    dotLayer(m2, dotR, 0.55); dotLayer(m1, dotA, 0.7); cam.apply(ctx);
+    // rios
+    ctx.strokeStyle = 'rgba(70,160,245,.35)'; ctx.lineWidth = 0.8 / k; riverPaths.forEach(p => ctx.stroke(p));
+    // vetores de costa e fronteiras
+    ctx.save(); glow(F, 6); ctx.strokeStyle = F; ctx.lineWidth = 1.3 / k; ctx.stroke(land); ctx.restore();
+    ctx.strokeStyle = 'rgba(70,245,154,.45)'; ctx.lineWidth = 0.8 / k; countryPaths.forEach(c => ctx.stroke(c.path));
+    ctx.setLineDash([2 / k, 3 / k]); ctx.strokeStyle = 'rgba(70,245,154,.35)'; C.states.forEach(s => ctx.stroke(s.path)); ctx.setLineDash([]);
+    // frentes
+    ctx.save(); glow(AMB, 10); ctx.strokeStyle = AMB; ctx.lineWidth = 1.8 / k; fr[1].forEach(line); glow(RX, 10); ctx.strokeStyle = RX; fr[2].forEach(line); ctx.restore();
+    // fortificação
+    C.FORTIFICACOES.forEach(f => { ctx.save(); glow(AL, 8); ctx.strokeStyle = AL; ctx.lineWidth = 1.4 / k; ctx.setLineDash([1 / k, 4 / k]); line(f.p); ctx.setLineDash([]); ctx.restore(); });
+    // suprimento
+    C.SUPRIMENTO.forEach(s => { ctx.strokeStyle = s.ok ? 'rgba(255,176,32,.55)' : 'rgba(255,74,58,.6)'; ctx.lineWidth = 1 / k; ctx.setLineDash([3 / k, 3 / k]); ctx.lineDashOffset = -t * 10 / k; line(s.p); });
+    ctx.setLineDash([]); ctx.lineDashOffset = 0;
+    // setas: vetor tracejado com divisas correndo
+    C.SETAS.forEach((s, i) => {
+      const pts = C.arrowPath(s), cor = s.f === 1 ? AMB : s.f === 2 ? RX : AL;
+      ctx.save(); glow(cor, 8); ctx.strokeStyle = cor; ctx.lineWidth = 1.4 / k; ctx.setLineDash([6 / k, 4 / k]); ctx.lineDashOffset = -t * 18 / k; line(pts); ctx.setLineDash([]);
+      // divisas animadas
+      for (let j = 0; j < 3; j++) { const u = ((t * 0.35 + j / 3 + i * 0.13) % 1); const idx = Math.floor(u * (pts.length - 2)); const a = pts[idx], b = pts[idx + 1]; chevron(a, b, 6 / k); }
+      const e = pts[pts.length - 1], q = pts[pts.length - 3]; chevron(q, e, 10 / k, true); ctx.restore();
+    });
+    // ---- tela ----
+    cam.screen(ctx);
+    // varredura de radar
+    const cx = cam.w * 0.5, cy = cam.h * 0.5, R = Math.hypot(cam.w, cam.h) * 0.6, ang = t * 0.8;
+    const grd = ctx.createConicGradient ? ctx.createConicGradient(ang, cx, cy) : null;
+    if (grd) { grd.addColorStop(0, 'rgba(70,245,154,.16)'); grd.addColorStop(0.08, 'rgba(70,245,154,0)'); grd.addColorStop(1, 'rgba(70,245,154,0)'); ctx.fillStyle = grd; ctx.fillRect(0, 0, cam.w, cam.h); }
+    ctx.strokeStyle = 'rgba(70,245,154,.09)'; ctx.lineWidth = 1; for (let r = 80; r < R; r += 80) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.stroke(); }
+    // rótulos
+    ctx.font = '12px "Share Tech Mono", monospace'; ctx.textBaseline = 'middle';
+    countryPaths.forEach(c => { if (!c.lp) return; const p = cam.toScreen(c.lp); ctx.fillStyle = 'rgba(70,245,154,.4)'; ctx.textAlign = 'center'; ctx.fillText(c.n.toUpperCase(), p[0], p[1]); });
+    C.states.forEach(s => { const p = cam.toScreen(s.lp); ctx.fillStyle = 'rgba(70,245,154,.35)'; ctx.textAlign = 'center'; ctx.fillText(s.id, p[0], p[1] + 14); });
+    ctx.textAlign = 'left';
+    C.CIDADES.forEach(c => { if (!c.br) return; if (c.k === 'est' && k < 1.2) return; const p = cam.toScreen(c.p); ctx.strokeStyle = F; ctx.lineWidth = 1; ctx.strokeRect(p[0] - 2.5, p[1] - 2.5, 5, 5); if (c.k === 'nac') { ctx.strokeRect(p[0] - 5, p[1] - 5, 10, 10); } ctx.fillStyle = 'rgba(185,255,216,.8)'; ctx.fillText(c.n.toUpperCase(), p[0] + 7, p[1]); });
+    // combates: pings
+    C.COMBATES.forEach((c, i) => { const p = cam.toScreen(c.p); for (let j = 0; j < 3; j++) { const u = ((t * 0.6 + j / 3 + i * 0.17) % 1); ctx.strokeStyle = `rgba(255,74,58,${1 - u})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(p[0], p[1], 4 + u * (14 + c.int * 6), 0, 7); ctx.stroke(); } ctx.fillStyle = AL; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); });
+    // unidades
+    C.UNIDADES.forEach((u, i) => glyph(u, cam.toScreen(u.p), t, i));
+    // retículo do mouse
+    if (mouse) { const p = cam.toScreen(mouse); ctx.strokeStyle = 'rgba(70,245,154,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p[0], 0); ctx.lineTo(p[0], cam.h); ctx.moveTo(0, p[1]); ctx.lineTo(cam.w, p[1]); ctx.stroke(); const ll = inv(mouse); document.getElementById('coord').textContent = `LAT ${ll[1].toFixed(2)} LON ${ll[0].toFixed(2)}${C.stateAt(mouse[0], mouse[1]) ? ' · ' + C.stateAt(mouse[0], mouse[1]).n.toUpperCase() : ''}`; }
+  }
+  function inv(m) { // aproximação inversa por busca local (só para o HUD)
+    let lon = -54, lat = -15; for (let it = 0; it < 30; it++) { const p = C.P(lon, lat); const dx = m[0] - p[0], dy = m[1] - p[1]; const px = C.P(lon + 0.1, lat), py = C.P(lon, lat + 0.1); lon += dx / ((px[0] - p[0]) / 0.1); lat += dy / ((py[1] - p[1]) / 0.1); } return [lon, lat]; }
+  function chevron(a, b, s, filled) { const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l; ctx.beginPath(); ctx.moveTo(b[0] - ux * s - uy * s * 0.7, b[1] - uy * s + ux * s * 0.7); ctx.lineTo(b[0], b[1]); ctx.lineTo(b[0] - ux * s + uy * s * 0.7, b[1] - uy * s - ux * s * 0.7); if (filled) { ctx.closePath(); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); } else ctx.stroke(); }
+  function glyph(u, p, t, i) {
+    const cor = u.f === 1 ? AMB : u.f === 2 ? RX : AL; const [x, y] = p;
+    ctx.save(); glow(cor, 8); ctx.strokeStyle = cor; ctx.fillStyle = cor; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if (u.f === 1) { ctx.moveTo(x, y - 8); ctx.lineTo(x + 8, y + 6); ctx.lineTo(x - 8, y + 6); ctx.closePath(); }
+    else if (u.f === 0) { ctx.rect(x - 7, y - 7, 14, 14); }
+    else { ctx.moveTo(x, y - 8); ctx.lineTo(x + 8, y); ctx.lineTo(x, y + 8); ctx.lineTo(x - 8, y); ctx.closePath(); }
+    ctx.stroke(); ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
+    const cod = (u.f === 1 ? 'UPR-' : u.f === 2 ? 'LFS-' : 'GOV-') + String(u.id + 1).padStart(2, '0');
+    ctx.font = '11px "Share Tech Mono", monospace'; ctx.textAlign = 'left'; ctx.fillText(cod, x + 11, y - 4); ctx.globalAlpha = .7; ctx.fillText((u.forca / 1000).toFixed(1) + 'K ' + u.post.toUpperCase().slice(0, 4), x + 11, y + 8); ctx.globalAlpha = 1;
+    if (u.post === 'cercada' && Math.sin(t * 6) > 0) { ctx.strokeStyle = AL; ctx.strokeRect(x - 12, y - 12, 24, 24); }
+    if (sel === u) { const s = 16 + Math.sin(t * 5) * 2; ctx.strokeStyle = F; ctx.beginPath(); for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { ctx.moveTo(x + sx * s, y + sy * s * 0.6); ctx.lineTo(x + sx * s, y + sy * s); ctx.lineTo(x + sx * s * 0.6, y + sy * s); } ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // ---- painéis ----
+  function barra(p, n = 18) { const f = Math.round(p * n); return '█'.repeat(f) + '░'.repeat(n - f); }
+  const vals = { militantes: 0.62, combatentes: 0.48, fundos: 0.31, armas: 0.55, apoio: 0.23, coesao: 0.71, legit: 0.38 };
+  document.getElementById('medidores').innerHTML = D.recursos.map(r => `<div class="medidor"><div class="lin"><span>${r.rot.toUpperCase()}</span><b>${r.v}</b></div><div class="barra ${vals[r.k] < 0.35 ? 'ruim' : ''}">${barra(vals[r.k])}</div></div>`).join('');
+  function ctrl() { const tt = C.totais(); document.getElementById('ctrl').innerHTML = [['UPR', 1], ['GOVERNO', 0], ['LIGA DO SUL', 2]].map(([n, f]) => `<div class="lin"><span>${n}</span><b>${(tt.area[f] * 100).toFixed(1)}% ÁREA · ${(tt.pop[f] * 100).toFixed(1)}% POP</b></div><div class="barra">${barra(tt.area[f])}</div>`).join(''); }
+  ctrl();
+  const log = document.getElementById('log');
+  function escreve(txt, cls = '') { const p = document.createElement('p'); if (cls) p.className = cls; log.appendChild(p); let i = 0; const iv = setInterval(() => { p.textContent = txt.slice(0, ++i); if (i >= txt.length) clearInterval(iv); }, 12); while (log.children.length > 14) log.removeChild(log.firstChild); }
+  let hora = 6; D.despachos.forEach((d, i) => setTimeout(() => escreve(`[${String(hora + i).padStart(2, '0')}:00] ${d.t.toUpperCase()}: ${d.x}`, i === 1 ? 'a' : ''), 300 + i * 900));
+
+  function unitAt(m) { let b = null, bd = 1e9; C.UNIDADES.forEach(u => { const d = Math.hypot(u.p[0] - m[0], u.p[1] - m[1]) * cam.k; if (d < 16 && d < bd) { bd = d; b = u; } }); return b; }
+  const selBox = document.getElementById('sel');
+  function clickAt(m) {
+    const u = unitAt(m), s = C.stateAt(m[0], m[1]); sel = u;
+    if (u) selBox.innerHTML = `<div class="rot">Unidade ${(u.f === 1 ? 'UPR-' : u.f === 2 ? 'LFS-' : 'GOV-') + String(u.id + 1).padStart(2, '0')}</div><div class="nome">${u.nome.toUpperCase()}</div>EFETIVO ${u.forca.toLocaleString('pt-BR')}/${u.max.toLocaleString('pt-BR')} · MORAL ${u.moral}% · SUPR ${u.sup}%<br>POSTURA: ${u.post.toUpperCase()}${u.f === 1 ? `<div class="ordens">${D.ordens.slice(0, 8).map(o => `<button title="${o.desc}">${o.rot}</button>`).join('')}</div>` : ''}`;
+    else if (s) { const c = C.controle(s.idx); selBox.innerHTML = `<div class="rot">Setor ${s.id}</div><div class="nome">${s.n.toUpperCase()}</div>POP ${s.pop} MI · CAP ${s.cap.toUpperCase()}<br>UPR ${Math.round(c[1] * 100)}% · GOV ${Math.round(c[0] * 100)}% · LFS ${Math.round(c[2] * 100)}%<br>${s.terTxt.toUpperCase()}`; }
+  }
+
+  // ---- turno e linha de comando ----
+  const btn = document.getElementById('turno');
+  function turno() {
+    if (btn.disabled) return; btn.disabled = true; escreve(`> EXECUTANDO ORDENS DO TURNO T+${14 + C.turno}...`, 'h');
+    const flips = C.planTurn(); C.nextTurn(); let i = 0; const step = Math.max(4, Math.ceil(flips.length / 60));
+    const iv = setInterval(() => { for (let j = 0; j < step && i < flips.length; j++, i++) C.apply(flips[i]); dirty = true; if (i >= flips.length) { clearInterval(iv); btn.disabled = false; ctrl(); escreve(`[OK] ${flips.length * 37} KM² ALTERADOS. RELATÓRIO: ${D.despachos[C.turno % 5].x}`); } }, 40);
+    document.getElementById('data').textContent = C.data().replace(' de ', ' ').toUpperCase().slice(0, 3) + ' 2028'; document.getElementById('turnoN').textContent = 'T+' + (14 + C.turno);
+  }
+  btn.onclick = turno;
+  const cli = document.getElementById('cli');
+  cli.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return; const v = cli.value.trim().toLowerCase(); cli.value = ''; if (!v) return; escreve('> ' + v.toUpperCase(), 'h');
+    if (v.startsWith('turno') || v.startsWith('exec')) turno();
+    else if (v.startsWith('zoom')) { const alvo = v.split(' ').slice(1).join(' '); const c = C.CIDADES.find(c => c.n.toLowerCase().startsWith(alvo)); if (c) { const p = cam.toScreen(c.p); cam.zoomAt(p[0], p[1], 2.2); cam.x += cam.w / 2 - cam.toScreen(c.p)[0]; cam.y += cam.h / 2 - cam.toScreen(c.p)[1]; escreve('[OK] CENTRALIZADO EM ' + c.n.toUpperCase()); } else escreve('[ERRO] ALVO NÃO ENCONTRADO', 'a'); }
+    else if (v.startsWith('pin')) escreve('[OK] MANOBRA EM PINÇA ATRIBUÍDA: UPR-01 + UPR-02 → PALMAS. CUSTO 3 PA.');
+    else if (v.startsWith('cerco')) escreve('[OK] CERCO MANTIDO EM IMPERATRIZ. MORAL INIMIGA −8/TURNO.');
+    else if (v.startsWith('ajuda')) escreve('ORDENS: TURNO · ZOOM <CIDADE> · PINÇA · CERCO · ' + D.ordens.map(o => o.k.toUpperCase()).join(' · '));
+    else escreve('[?] ORDEM NÃO RECONHECIDA. DIGITE AJUDA.', 'a');
+  });
+  document.getElementById('zi').onclick = cam.zoomIn; document.getElementById('zo').onclick = cam.zoomOut; document.getElementById('zf').onclick = cam.fit;
+  (function loop() { draw(); setTimeout(() => requestAnimationFrame(loop), 33); })();
+})();
+</script>
+</body>
+</html>

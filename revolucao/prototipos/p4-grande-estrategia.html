@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brasil em Armas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Conceito: jogo de grande estratégia moderno — terreno pintado com relevo, painéis de vidro escuro com bordas metálicas, modos de mapa */
+:root {
+  --vidro: rgba(17, 22, 28, .86); --vidro2: rgba(30, 37, 46, .9); --borda: #6d5a35; --ouro: #d9b45a; --ouro-claro: #f2d58b;
+  --texto: #e8e2d2; --texto2: #a49c88; --upr: #c8323c; --gov: #3f6f9e; --liga: #d2a52a; --bom: #6fbf4a; --ruim: #e0573f;
+  --f-tit: 'Barlow Condensed', 'Arial Narrow', sans-serif; --f-corpo: 'Barlow', system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; background: #0d1116; color: var(--texto); font-family: var(--f-corpo); }
+canvas#mapa { position: fixed; inset: 0; width: 100%; height: 100%; cursor: default; touch-action: none; }
+.moldura { background: linear-gradient(180deg, var(--vidro2), var(--vidro)); border: 1px solid #000; box-shadow: inset 0 0 0 1px #ffffff12, 0 0 0 1px var(--borda), 0 8px 24px #0009; backdrop-filter: blur(6px); }
+#topo { position: fixed; left: 0; right: 0; top: 0; display: flex; align-items: stretch; gap: 0; z-index: 3; padding-top: env(safe-area-inset-top, 0px); padding-left: max(0px, env(safe-area-inset-left, 0px)); padding-right: max(0px, env(safe-area-inset-right, 0px)); }
+#topo .org { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px max(16px, env(safe-area-inset-left, 0px)); border-right: 1px solid var(--borda); }
+#topo .org img { width: 54px; height: 36px; border: 2px solid var(--ouro); box-shadow: 0 2px 6px #000; }
+#topo .org b { font: 700 18px/1 var(--f-tit); letter-spacing: .04em; display: block; } #topo .org span { font-size: 11px; color: var(--texto2); }
+#topo .recs { display: flex; flex: 1; overflow-x: auto; scrollbar-width: none; }
+.rec { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-right: 1px solid #ffffff10; white-space: nowrap; }
+.rec svg { width: 22px; height: 22px; flex: none; }
+.rec b { font: 600 17px/1 var(--f-tit); font-variant-numeric: tabular-nums; display: block; } .rec small { font-size: 10.5px; color: var(--texto2); }
+.rec .d { font-size: 11px; margin-left: 4px; } .d.p { color: var(--bom); } .d.n { color: var(--ruim); }
+#topo .tempo { display: flex; align-items: center; gap: 8px; padding: 6px max(16px, env(safe-area-inset-right, 0px)) 6px 14px; border-left: 1px solid var(--borda); }
+#topo .tempo .data { font: 600 18px var(--f-tit); min-width: 130px; text-align: center; }
+.vel { display: flex; gap: 2px; } .vel button { width: 26px; height: 26px; background: #0b0e12; border: 1px solid #ffffff22; color: var(--texto2); font: 600 12px var(--f-tit); cursor: pointer; padding: 0; }
+.vel button[aria-pressed="true"] { color: #111; background: var(--ouro); border-color: var(--ouro-claro); }
+#painel { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); top: 70px; width: 320px; max-height: calc(100% - 200px); overflow: auto; z-index: 3; }
+#painel .cab { padding: 12px 14px; display: flex; gap: 12px; align-items: center; background: linear-gradient(90deg, #2a1d14, #1a2028); border-bottom: 1px solid var(--borda); }
+#painel .cab h2 { margin: 0; font: 700 22px/1 var(--f-tit); letter-spacing: .03em; } #painel .cab p { margin: 2px 0 0; font-size: 12px; color: var(--texto2); }
+#painel .cab img { width: 48px; height: 32px; border: 1px solid var(--ouro); }
+#painel .corpo { padding: 12px 14px; display: grid; gap: 12px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.stats div { background: #0b0e12; border: 1px solid #ffffff14; padding: 6px 8px; font-size: 10.5px; color: var(--texto2); text-transform: uppercase; letter-spacing: .06em; }
+.stats b { display: block; font: 600 19px var(--f-tit); color: var(--texto); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.barra { height: 6px; background: #0b0e12; border: 1px solid #ffffff1a; } .barra i { display: block; height: 100%; }
+.terreno { font-size: 12.5px; color: var(--texto2); line-height: 1.45; border-left: 3px solid var(--ouro); padding-left: 10px; }
+.ordens { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ordens button { background: linear-gradient(#2a323d, #1b2129); border: 1px solid #000; box-shadow: inset 0 1px 0 #ffffff1c, 0 0 0 1px #ffffff10; color: var(--texto); font: 600 13px var(--f-tit); letter-spacing: .03em; text-align: left; padding: 7px 9px; cursor: pointer; display: flex; justify-content: space-between; gap: 4px; }
+.ordens button:hover { box-shadow: inset 0 1px 0 #ffffff1c, 0 0 0 1px var(--ouro); color: var(--ouro-claro); }
+.ordens button span { color: var(--ouro); font-weight: 500; }
+h3.sec { margin: 0; font: 600 13px var(--f-tit); letter-spacing: .14em; text-transform: uppercase; color: var(--ouro); }
+#modos { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 0; z-index: 3; }
+#modos button { width: 72px; height: 54px; background: linear-gradient(#2a323d, #161b22); border: 1px solid #000; box-shadow: inset 0 1px 0 #ffffff18; color: var(--texto2); font: 600 11px var(--f-tit); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; display: grid; place-items: center; gap: 2px; padding: 4px; }
+#modos button svg { width: 22px; height: 22px; }
+#modos button[aria-pressed="true"] { color: var(--ouro-claro); box-shadow: inset 0 0 0 2px var(--ouro), inset 0 1px 0 #ffffff18; }
+#mini { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: 200px; height: 196px; z-index: 3; padding: 4px; }
+#mini canvas { width: 100%; height: 100%; display: block; cursor: pointer; }
+#fim { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 3; font: 700 20px var(--f-tit); letter-spacing: .1em; text-transform: uppercase; color: #1a1205; background: linear-gradient(#f4dc95, #c9992f); border: 1px solid #5d4413; box-shadow: 0 0 0 2px #000, 0 6px 18px #000a, inset 0 1px 0 #fff8; padding: 12px 28px; cursor: pointer; }
+#fim:hover { filter: brightness(1.08); } #fim:disabled { filter: grayscale(.6); cursor: wait; }
+#alertas { position: fixed; left: max(12px, env(safe-area-inset-left, 0px)); top: 70px; display: grid; gap: 6px; z-index: 3; width: 290px; }
+.alerta { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; padding: 8px 10px; font-size: 12.5px; line-height: 1.35; cursor: pointer; }
+.alerta .ic { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 700 18px var(--f-tit); box-shadow: inset 0 0 0 2px #000, 0 0 0 1px var(--borda); }
+.alerta b { font: 600 14px var(--f-tit); letter-spacing: .03em; display: block; }
+#dica { position: fixed; pointer-events: none; z-index: 5; padding: 8px 10px; font-size: 12.5px; max-width: 260px; }
+#dica b { font: 600 15px var(--f-tit); display: block; color: var(--ouro-claro); }
+a.galeria { color: var(--texto2); font: 600 12px var(--f-tit); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; padding: 0 6px; }
+@media (max-width: 900px) { #painel { top: auto; bottom: 80px; width: calc(100% - 24px); max-height: 40%; } #alertas, #mini { display: none; } #modos button { width: 56px; } #fim { left: auto; right: 12px; transform: none; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); padding: 10px 16px; font-size: 16px; } #painel:not(.aberto) { display: none; } #topo .tempo .data { min-width: 0; } }
+</style>
+</head>
+<body>
+<canvas id="mapa" aria-label="Mapa de estratégia com terreno"></canvas>
+<div id="topo" class="moldura">
+  <div class="org"><img id="band" alt="Bandeira da UPR"><div><b>União Popular Revolucionária</b><span>Guerra popular prolongada</span></div></div>
+  <div class="recs" id="recs"></div>
+  <div class="tempo"><a class="galeria" href="index.html">Galeria</a><div class="vel" id="vel"><button aria-pressed="false" aria-label="Pausar">II</button><button aria-pressed="true">1</button><button aria-pressed="false">2</button><button aria-pressed="false">3</button></div><div class="data" id="data">1 de março de 2028</div></div>
+</div>
+<div id="alertas"></div>
+<aside id="painel" class="moldura"></aside>
+<div id="mini" class="moldura"><canvas id="minimapa" aria-label="Minimapa"></canvas></div>
+<div id="modos" class="moldura"></div>
+<button id="fim">Encerrar turno</button>
+<div id="dica" class="moldura" hidden></div>
+<script src="base/geo.js"></script>
+<script src="base/cenario.js"></script>
+<script src="base/dados.js"></script>
+<script>
+(function () {
+  const C = Cenario, G = C.G, D = DADOS;
+  const cv = document.getElementById('mapa'), ctx = cv.getContext('2d');
+  const COR = { 0: [63, 111, 158], 1: [200, 50, 60], 2: [210, 165, 42] };
+  const flagSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#c8323c"/><polygon points="0,0 13,10 0,20" fill="#1d1a17"/><polygon fill="#f4ecd9" points="4.6,7.6 5.3,9.4 7.2,9.4 5.7,10.6 6.2,12.4 4.6,11.3 3.0,12.4 3.5,10.6 2.0,9.4 3.9,9.4"/></svg>`;
+  const flagsSvg = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#3c7a3a"/><polygon points="15,2 28,10 15,18 2,10" fill="#e3c34a"/><circle cx="15" cy="10" r="4.4" fill="#2c3f7a"/></svg>`, flagSvg, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#2f4f2a"/><rect y="6.5" width="30" height="7" fill="#d2a52a"/><rect y="9" width="30" height="2" fill="#b3261e"/></svg>`];
+  const url = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  const flags = flagsSvg.map(s => { const i = new Image(); i.src = url(s); return i; });
+  document.getElementById('band').src = url(flagSvg);
+
+  // ---------- terreno pré-renderizado ----------
+  const TW = 1400, TS = TW / G.vw, TH = Math.round(G.vh * TS);
+  const countryPaths = G.countries.map(c => ({ ...c, path: new Path2D(c.d) }));
+  const land = new Path2D(); countryPaths.forEach(c => land.addPath(c.path)); land.addPath(C.brasil);
+  const terreno = document.createElement('canvas'); terreno.width = TW; terreno.height = TH;
+  (function buildTerrain() {
+    const g = terreno.getContext('2d'); g.scale(TS, TS);
+    // oceano: profundo -> raso junto à costa
+    const og = g.createLinearGradient(0, 0, G.vw, G.vh); og.addColorStop(0, '#1d4a66'); og.addColorStop(1, '#14344d'); g.fillStyle = og; g.fillRect(0, 0, G.vw, G.vh);
+    g.save(); g.filter = `blur(${14 * TS}px)`; g.strokeStyle = '#3f8aa3'; g.lineWidth = 26; g.stroke(land); g.lineWidth = 10; g.strokeStyle = '#5aa6b5'; g.stroke(land); g.restore();
+    // biomas
+    const bio = document.createElement('canvas'); bio.width = TW; bio.height = TH; const b = bio.getContext('2d'); b.scale(TS, TS);
+    const latGrad = b.createLinearGradient(0, 0, 0, G.vh); latGrad.addColorStop(0, '#5f8a3e'); latGrad.addColorStop(0.45, '#8f9a52'); latGrad.addColorStop(0.75, '#8fae5d'); latGrad.addColorStop(1, '#9db36c'); b.fillStyle = latGrad; b.fill(land);
+    const cores = [[/Bacia do rio Amazonas|Selvas|Planalto das Guianas|Llanos/, '#2e5a28'], [/Caatinga/, '#bda56a'], [/Planalto Brasileiro|Planalto do Mato Grosso/, '#9c9a58'], [/Pantanal|Entre Rios/, '#5c7d52'], [/Pampas/, '#94b062'], [/Chaco/, '#a39a62'], [/Atacama|Altiplano|Uyuni/, '#b7a07f'], [/Yungas/, '#4b6f3a']];
+    G.relief.forEach(r => { const c = cores.find(([re]) => re.test(r.n)); if (!c) return; b.fillStyle = c[1]; b.fill(new Path2D(r.d)); });
+    g.save(); g.clip(land); g.filter = `blur(${10 * TS}px)`; g.drawImage(bio, 0, 0, G.vw, G.vh); g.filter = 'none'; g.restore();
+    // relevo: altura = ruído + serras
+    const mont = document.createElement('canvas'); mont.width = TW; mont.height = TH; const m = mont.getContext('2d'); m.scale(TS, TS); m.filter = `blur(${7 * TS}px)`; m.fillStyle = '#fff';
+    G.relief.forEach(r => { if (/Range/.test(r.k)) { m.globalAlpha = /Andes|Cordilheira/.test(r.n) ? 1 : 0.55; m.fill(new Path2D(r.d)); } else if (/Plateau/.test(r.k)) { m.globalAlpha = 0.18; m.fill(new Path2D(r.d)); } });
+    const md = m.getImageData(0, 0, TW, TH).data;
+    const img = g.getImageData(0, 0, TW, TH), d = img.data;
+    const lm = document.createElement('canvas'); lm.width = TW; lm.height = TH; const lg = lm.getContext('2d'); lg.scale(TS, TS); lg.fillStyle = '#fff'; lg.fill(land); const ld = lg.getImageData(0, 0, TW, TH).data;
+    const H = new Float32Array(TW * TH);
+    for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) { const i = y * TW + x; if (!ld[i * 4 + 3]) continue; const mm = md[i * 4] / 255 * (md[i * 4 + 3] / 255); const n = C.fbm(x / 22, y / 22), n2 = C.fbm(x / 6 + 40, y / 6); H[i] = n * 0.22 + n2 * 0.05 * (0.25 + mm * 3) + mm * (0.9 + n2 * 0.9); }
+    for (let y = 1; y < TH - 1; y++) for (let x = 1; x < TW - 1; x++) {
+      const i = y * TW + x; if (!ld[i * 4 + 3]) continue;
+      const dx = H[i + 1] - H[i - 1], dy = H[i + TW] - H[i - TW]; let sh = (-dx - dy) * (4 + md[i * 4] / 255 * 9); sh = Math.max(-0.45, Math.min(0.45, sh));
+      const mm = md[i * 4] / 255; const snow = mm > 0.85 && H[i] > 1.3 ? (H[i] - 1.3) * 1.2 : 0;
+      for (let c = 0; c < 3; c++) { let v = d[i * 4 + c] * (1 + sh) + (sh > 0 ? sh * 40 : 0); v = v * (1 - mm * 0.25) + [120, 100, 80][c] * mm * 0.25; v = v + (235 - v) * Math.min(1, snow); d[i * 4 + c] = Math.max(0, Math.min(255, v)); }
+    }
+    g.putImageData(img, 0, 0);
+    // rios e lagos pintados
+    g.setTransform(TS, 0, 0, TS, 0, 0); g.lineCap = 'round'; g.strokeStyle = '#3d7e9c';
+    G.rivers.forEach(r => { g.lineWidth = r.r <= 3 ? 1.7 : r.r <= 5 ? 1.1 : 0.7; g.stroke(new Path2D(r.d)); });
+    g.fillStyle = '#3d7e9c'; G.lakes.forEach(l => g.fill(new Path2D(l.d)));
+  })();
+
+  // ---------- estado de visualização ----------
+  let modo = 'politico', mask = null, fr = {}, dirty = true, sel = null, hoverState = null, hoverUnit = null;
+  function rebuild() { mask = C.maskCanvas({ 0: [...COR[0], 45], 1: [...COR[1], 150], 2: [...COR[2], 140] }); fr[1] = C.chains(C.contour(1)).map(l => C.smoothChain(l, 2)); fr[2] = C.chains(C.contour(2)).map(l => C.smoothChain(l, 2)); dirty = false; drawMini(); }
+  const t0 = performance.now();
+  const cam = C.camera(cv, () => {}, { pad: [70, 340, 80, 300], focus: [380, 120, 980, 560], onClick: m => clickAt(m), onHover: (m, e) => hover(m, e) });
+  if (innerWidth < 900) { cam.fit(); }
+
+  function line(pts) { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); }
+  const apoio = { MA: 41, PA: 34, TO: 38, PI: 46, PE: 39, BA: 27, CE: 31, PB: 29, RN: 24, AL: 26, SE: 22, AM: 12, AP: 15, RR: 9, AC: 11, RO: 10, MT: 8, MS: 9, GO: 14, DF: 18, MG: 17, ES: 16, RJ: 24, SP: 19, PR: 11, SC: 7, RS: 13 };
+
+  function draw() {
+    if (dirty) rebuild();
+    const t = (performance.now() - t0) / 1000, k = cam.k;
+    cam.screen(ctx); ctx.fillStyle = '#14344d'; ctx.fillRect(0, 0, cam.w, cam.h);
+    cam.apply(ctx); ctx.imageSmoothingEnabled = true; ctx.drawImage(terreno, 0, 0, G.vw, G.vh);
+    // nuvens/neblina leve de borda
+    if (modo === 'politico') {
+      ctx.save(); ctx.clip(C.brasil); ctx.drawImage(mask, 0, 0, C.GW * C.CELL, C.GH * C.CELL);
+      // listras animadas nas áreas da UPR em disputa (borda)
+      ctx.restore();
+    } else if (modo === 'apoio') {
+      C.states.forEach(s => { const v = apoio[s.id] / 50; ctx.fillStyle = `rgba(${200},${50 + (1 - v) * 150},${60 + (1 - v) * 120},${0.25 + v * 0.5})`; ctx.fill(s.path); });
+    } else if (modo === 'suprimento') {
+      ctx.save(); ctx.fillStyle = 'rgba(10,14,20,.45)'; ctx.fill(C.brasil); ctx.restore();
+      C.BASES.forEach(b => { const gr = ctx.createRadialGradient(b.p[0], b.p[1], 0, b.p[0], b.p[1], 110); gr.addColorStop(0, 'rgba(111,191,74,.7)'); gr.addColorStop(0.6, 'rgba(224,180,60,.35)'); gr.addColorStop(1, 'rgba(224,87,63,0)'); ctx.fillStyle = gr; ctx.save(); ctx.clip(C.brasil); ctx.fillRect(b.p[0] - 110, b.p[1] - 110, 220, 220); ctx.restore(); });
+    }
+    // fronteiras
+    ctx.strokeStyle = 'rgba(15,15,15,.45)'; ctx.lineWidth = 0.7 / k; C.states.forEach(s => ctx.stroke(s.path));
+    if (hoverState) { ctx.save(); ctx.fillStyle = 'rgba(255,240,200,.14)'; ctx.fill(hoverState.path); ctx.strokeStyle = '#f2d58b'; ctx.lineWidth = 2 / k; ctx.stroke(hoverState.path); ctx.restore(); }
+    ctx.strokeStyle = 'rgba(10,10,10,.85)'; ctx.lineWidth = 2.2 / k; countryPaths.forEach(c => ctx.stroke(c.path)); ctx.stroke(C.brasil);
+    ctx.strokeStyle = 'rgba(230,220,190,.35)'; ctx.lineWidth = 0.8 / k; countryPaths.forEach(c => ctx.stroke(c.path)); ctx.stroke(C.brasil);
+    // frentes
+    if (modo === 'politico') for (const f of [2, 1]) { ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 4.5 / k; fr[f].forEach(line); ctx.strokeStyle = f === 1 ? '#ff5a4f' : '#ffd25a'; ctx.lineWidth = 2 / k; fr[f].forEach(line); }
+    // fortificação
+    C.FORTIFICACOES.forEach(fo => { ctx.strokeStyle = '#1b2733'; ctx.lineWidth = 4 / k; line(fo.p); ctx.strokeStyle = '#8fb6d9'; ctx.lineWidth = 1.6 / k; ctx.setLineDash([4 / k, 3 / k]); line(fo.p); ctx.setLineDash([]); });
+    // suprimento
+    if (modo !== 'apoio') C.SUPRIMENTO.forEach(s => { ctx.strokeStyle = s.ok ? 'rgba(111,191,74,.9)' : 'rgba(224,87,63,.9)'; ctx.lineWidth = (modo === 'suprimento' ? 3 : 1.6) / k; ctx.setLineDash([5 / k, 4 / k]); ctx.lineDashOffset = -t * 14 / k; line(s.p); ctx.setLineDash([]); ctx.lineDashOffset = 0; });
+    // setas
+    if (modo !== 'apoio') C.SETAS.forEach(s => arrow(s, t, k));
+    // ---- tela ----
+    cam.screen(ctx); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    countryPaths.forEach(c => { if (!c.lp) return; const p = cam.toScreen(c.lp); label(c.n.toUpperCase(), p[0], p[1], `600 ${Math.min(20, 13 * Math.sqrt(k))}px "Barlow Condensed"`, 'rgba(255,255,255,.55)', 4); });
+    if (k > 0.75) C.states.forEach(s => { const p = cam.toScreen(s.lp); label(s.n.toUpperCase(), p[0], p[1] + 20, `600 ${Math.min(15, 11 * Math.sqrt(k))}px "Barlow Condensed"`, 'rgba(255,255,255,.75)', 2.5); });
+    C.CIDADES.forEach(c => { if (!c.br) return; if (c.k === 'est' && k < 1.4) return; const p = cam.toScreen(c.p); city(p, c); });
+    C.COMBATES.forEach((c, i) => battle(cam.toScreen(c.p), c, t, i));
+    C.UNIDADES.forEach(u => token(u, cam.toScreen(u.p), t));
+  }
+  function label(txt, x, y, font, cor, sp) { ctx.font = font; ctx.letterSpacing = sp + 'px'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.strokeText(txt, x, y); ctx.fillStyle = cor; ctx.fillText(txt, x, y); ctx.letterSpacing = '0px'; }
+  function city(p, c) { ctx.save(); ctx.shadowColor = '#000'; ctx.shadowBlur = 3; ctx.fillStyle = c.k === 'nac' ? '#f2d58b' : '#f1ece0'; ctx.beginPath(); if (c.k === 'nac') { for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 3 : 7; ctx.lineTo(p[0] + Math.cos(a) * r, p[1] + Math.sin(a) * r); } } else ctx.arc(p[0], p[1], c.k === 'est' ? 2.2 : 3.2, 0, 7); ctx.fill(); ctx.restore(); ctx.textAlign = 'left'; label(c.n, p[0] + 7, p[1], `500 ${c.k === 'est' ? 11 : 12.5}px Barlow`, '#fff', 0); ctx.textAlign = 'center'; }
+  function arrow(s, t, k) {
+    const pts = C.arrowPath(s); const w = (s.f === 1 ? 13 : 10) / k; const head = w * 1.1;
+    const e = pts[pts.length - 1], q = pts[pts.length - 4]; const L = Math.hypot(e[0] - q[0], e[1] - q[1]) || 1, ux = (e[0] - q[0]) / L, uy = (e[1] - q[1]) / L;
+    const body = pts.filter(p => Math.hypot(p[0] - e[0], p[1] - e[1]) > head * 1.2);
+    const side = sg => body.map((p, i) => { const a = body[Math.max(0, i - 1)], b = body[Math.min(body.length - 1, i + 1)]; const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; const ww = w / 2 * (0.6 + 0.4 * i / body.length); return [p[0] - dy / l * ww * sg, p[1] + dx / l * ww * sg]; });
+    const A = side(1), B = side(-1).reverse(); const bx = e[0] - ux * head * 1.2, by = e[1] - uy * head * 1.2;
+    const path = new Path2D(); A.forEach((p, i) => i ? path.lineTo(p[0], p[1]) : path.moveTo(p[0], p[1])); path.lineTo(bx - uy * head, by + ux * head); path.lineTo(e[0], e[1]); path.lineTo(bx + uy * head, by - ux * head); B.forEach(p => path.lineTo(p[0], p[1])); path.closePath();
+    const c = COR[s.f]; const gr = ctx.createLinearGradient(pts[0][0], pts[0][1], e[0], e[1]); gr.addColorStop(0, `rgba(${c},.15)`); gr.addColorStop(1, `rgba(${c},.92)`);
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 8 * cam.dpr; ctx.fillStyle = gr; ctx.fill(path); ctx.restore();
+    // listras animadas
+    ctx.save(); ctx.clip(path); ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 3 / k; for (let j = 0; j < 8; j++) { const u = ((t * 0.5 + j / 8) % 1); const i = Math.floor(u * (pts.length - 1)); const p = pts[i], pn = pts[Math.min(pts.length - 1, i + 1)]; const dx = pn[0] - p[0], dy = pn[1] - p[1], l = Math.hypot(dx, dy) || 1; ctx.beginPath(); ctx.moveTo(p[0] - dy / l * w - dx / l * 4 / k, p[1] + dx / l * w - dy / l * 4 / k); ctx.lineTo(p[0] + dx / l * 4 / k, p[1] + dy / l * 4 / k); ctx.lineTo(p[0] + dy / l * w - dx / l * 4 / k, p[1] - dx / l * w - dy / l * 4 / k); ctx.stroke(); } ctx.restore();
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.2 / k; ctx.stroke(path);
+  }
+  function battle(p, c, t, i) {
+    const [x, y] = p; ctx.save(); ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
+    const pul = 1 + Math.sin(t * 4 + i) * 0.06; ctx.translate(x, y); ctx.scale(pul, pul);
+    ctx.fillStyle = '#1a1208'; ctx.beginPath(); ctx.arc(0, 0, 15, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#d9b45a'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = '#f1ece0'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-7, -7); ctx.lineTo(7, 7); ctx.moveTo(7, -7); ctx.lineTo(-7, 7); ctx.stroke();
+    ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-8, -3); ctx.lineTo(-3, -8); ctx.moveTo(8, -3); ctx.lineTo(3, -8); ctx.stroke();
+    ctx.restore();
+    const odds = [62, 81, 44, 57, 35, 50][i % 6]; ctx.fillStyle = '#0b0e12'; ctx.fillRect(x - 20, y + 17, 40, 6); ctx.fillStyle = odds >= 50 ? '#6fbf4a' : '#e0573f'; ctx.fillRect(x - 19, y + 18, 38 * odds / 100, 4);
+    ctx.font = '600 11px "Barlow Condensed"'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(odds + '%', x, y + 30);
+  }
+  function token(u, p, t) {
+    const [x, y] = p, w = 52, h = 26, on = sel === u || hoverUnit === u;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
+    const gr = ctx.createLinearGradient(0, y - h / 2, 0, y + h / 2); const c = COR[u.f]; gr.addColorStop(0, `rgb(${c.map(v => Math.min(255, v + 40))})`); gr.addColorStop(1, `rgb(${c.map(v => v * 0.55)})`);
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2, w, h, 4); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = on ? '#f2d58b' : '#0b0b0b'; ctx.lineWidth = on ? 2.5 : 1.2; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2, w, h, 4); ctx.stroke();
+    if (flags[u.f].complete) ctx.drawImage(flags[u.f], x - w / 2 + 3, y - h / 2 + 3, 20, 13);
+    ctx.fillStyle = '#fff'; ctx.font = '700 13px "Barlow Condensed"'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText((u.forca / 1000).toFixed(1) + 'k', x + w / 2 - 4, y - 3);
+    // barras de força e moral
+    ctx.fillStyle = '#0b0e12'; ctx.fillRect(x - w / 2 + 3, y + h / 2 - 7, w - 6, 5);
+    ctx.fillStyle = u.forca / u.max > 0.6 ? '#6fbf4a' : u.forca / u.max > 0.35 ? '#e0b43c' : '#e0573f'; ctx.fillRect(x - w / 2 + 4, y + h / 2 - 6, (w - 8) * u.forca / u.max, 1.6);
+    ctx.fillStyle = '#d9b45a'; ctx.fillRect(x - w / 2 + 4, y + h / 2 - 4, (w - 8) * u.moral / 100, 1.6);
+    // ícone de postura
+    const ic = { ataque: '⚔', defesa: '⛨', fortificada: '▣', cercada: '!', isolada: '!', apoio: '✚', reserva: '◷' }[u.post] || '';
+    ctx.fillStyle = u.post === 'cercada' || u.post === 'isolada' ? '#e0573f' : '#111'; ctx.beginPath(); ctx.arc(x - w / 2, y - h / 2, 8, 0, 7); ctx.fill(); ctx.strokeStyle = '#d9b45a'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '600 10px Barlow'; ctx.textAlign = 'center'; ctx.fillText(ic, x - w / 2, y - h / 2 + 0.5);
+    if (u.post === 'cercada') { ctx.strokeStyle = `rgba(224,87,63,${0.5 + Math.sin(t * 5) * 0.4})`; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.arc(x, y, 36, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+  }
+
+  // ---------- minimapa ----------
+  const mini = document.getElementById('minimapa'), mctx = mini.getContext('2d');
+  function drawMini() { const r = mini.getBoundingClientRect(); if (!r.width) return; mini.width = r.width * 2; mini.height = r.height * 2; const s = Math.min(mini.width / G.vw, mini.height / G.vh); mctx.setTransform(s, 0, 0, s, 0, 0); mctx.drawImage(terreno, 0, 0, G.vw, G.vh); mctx.save(); mctx.clip(C.brasil); mctx.globalAlpha = 0.9; mctx.drawImage(mask, 0, 0, C.GW * C.CELL, C.GH * C.CELL); mctx.restore(); mctx.strokeStyle = '#000'; mctx.lineWidth = 2; mctx.stroke(C.brasil); }
+  function miniView() { const s = Math.min(mini.width / G.vw, mini.height / G.vh); drawMini(); const a = cam.toMap(0, 0), b = cam.toMap(cam.w, cam.h); mctx.strokeStyle = '#f2d58b'; mctx.lineWidth = 2 / s * 1.2; mctx.strokeRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); }
+  mini.addEventListener('click', e => { const r = mini.getBoundingClientRect(); const s = Math.min(r.width / G.vw, r.height / G.vh); const mx = (e.clientX - r.left) / s, my = (e.clientY - r.top) / s; const c = cam.toScreen([mx, my]); cam.x += cam.w / 2 - c[0]; cam.y += cam.h / 2 - c[1]; });
+
+  // ---------- interface ----------
+  const ic = { militantes: '<circle cx="12" cy="8" r="4" fill="#d9b45a"/><path d="M4 21c0-5 3.6-8 8-8s8 3 8 8z" fill="#d9b45a"/>', combatentes: '<path d="M4 20 18 6M15 4l5 5M6 14l4 4" stroke="#d9b45a" stroke-width="2.4" fill="none" stroke-linecap="round"/>', fundos: '<circle cx="12" cy="12" r="8" fill="none" stroke="#d9b45a" stroke-width="2"/><path d="M12 7v10M9 9.5c0-1.2 1.3-2 3-2s3 .8 3 2-1.3 1.8-3 2.3-3 1.1-3 2.4 1.3 2 3 2 3-.8 3-2" stroke="#d9b45a" stroke-width="1.6" fill="none"/>', armas: '<path d="M3 13h13l3-3h2v4h-3l-1 3h-4l-1 3H8l1-4H3z" fill="#d9b45a"/>', apoio: '<path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z" fill="#d9b45a"/>', coesao: '<circle cx="8" cy="12" r="5" fill="none" stroke="#d9b45a" stroke-width="2"/><circle cx="16" cy="12" r="5" fill="none" stroke="#d9b45a" stroke-width="2"/>', legit: '<path d="M4 9h16L12 3zM6 10h2v8H6zm5 0h2v8h-2zm5 0h2v8h-2zM4 19h16v2H4z" fill="#d9b45a"/>' };
+  document.getElementById('recs').innerHTML = D.recursos.map(r => `<div class="rec" title="${r.rot}"><svg viewBox="0 0 24 24">${ic[r.k]}</svg><div><small>${r.rot}</small><b>${r.v}<span class="d ${r.d.startsWith('−') ? 'n' : 'p'}">${r.d}</span></b></div></div>`).join('');
+  const alertas = [['!', '#e0573f', 'Bolsão de Imperatriz', '23ª Brigada sem suprimento. Rendição provável em 2 turnos.'], ['⚔', '#d9b45a', 'Batalha de Miracema', 'Chance de vitória: 62%. Artilharia disponível.'], ['⛟', '#3f6f9e', 'Suprimento cortado', 'Destacamento Tapajós isolado.']];
+  document.getElementById('alertas').innerHTML = alertas.map(a => `<div class="alerta moldura"><div class="ic" style="background:${a[1]}">${a[0]}</div><div><b>${a[2]}</b>${a[3]}</div></div>`).join('');
+  const modos = [['politico', 'Político', '<path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 3v16M15 5v16" stroke="currentColor" stroke-width="1.4"/>'], ['terreno', 'Terreno', '<path d="M2 20 9 8l4 6 3-4 6 10z" fill="currentColor"/>'], ['suprimento', 'Suprimento', '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" fill="currentColor"/><circle cx="7" cy="18" r="2" fill="currentColor"/><circle cx="17" cy="18" r="2" fill="currentColor"/>'], ['apoio', 'Apoio', '<path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z" fill="currentColor"/>']];
+  const mb = document.getElementById('modos'); mb.innerHTML = modos.map(m => `<button data-m="${m[0]}" aria-pressed="${m[0] === modo}"><svg viewBox="0 0 24 24">${m[2]}</svg>${m[1]}</button>`).join('');
+  mb.onclick = e => { const b = e.target.closest('button'); if (!b) return; modo = b.dataset.m; mb.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+  document.getElementById('vel').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#vel button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+
+  const painel = document.getElementById('painel'), dica = document.getElementById('dica');
+  function unitAt(m) { let b = null, bd = 1e9; C.UNIDADES.forEach(u => { const d = Math.hypot(u.p[0] - m[0], u.p[1] - m[1]) * cam.k; if (d < 26 && d < bd) { bd = d; b = u; } }); return b; }
+  function hover(m, e) {
+    if (!m) { hoverState = null; hoverUnit = null; dica.hidden = true; return; }
+    hoverUnit = unitAt(m); hoverState = hoverUnit ? null : C.stateAt(m[0], m[1]); cv.style.cursor = hoverUnit || hoverState ? 'pointer' : 'default';
+    if (hoverUnit) { dica.innerHTML = `<b>${hoverUnit.nome}</b>${C.FAC[hoverUnit.f].nome} · ${hoverUnit.post}<br>Força ${hoverUnit.forca.toLocaleString('pt-BR')} · Moral ${hoverUnit.moral}% · Supr. ${hoverUnit.sup}%`; }
+    else if (hoverState) { const c = C.controle(hoverState.idx); dica.innerHTML = `<b>${hoverState.n}</b>Controle UPR ${Math.round(c[1] * 100)}% · Apoio ${apoio[hoverState.id]}%<br>${hoverState.terTxt}`; }
+    else { dica.hidden = true; return; }
+    dica.hidden = false; dica.style.left = Math.min(innerWidth - 280, e.clientX + 16) + 'px'; dica.style.top = (e.clientY + 16) + 'px';
+  }
+  function clickAt(m) {
+    const u = unitAt(m), s = C.stateAt(m[0], m[1]); sel = u;
+    if (u) {
+      const st = C.stateAt(u.p[0], u.p[1]);
+      painel.innerHTML = `<div class="cab"><img src="${flags[u.f].src}" alt=""><div><h2>${u.nome}</h2><p>${C.FAC[u.f].nome} · ${u.tipo}</p></div></div><div class="corpo">
+        <div class="stats"><div>Força<b>${(u.forca / 1000).toFixed(1)}k</b></div><div>Moral<b>${u.moral}%</b></div><div>Supr.<b>${u.sup}%</b></div></div>
+        <div><div class="barra"><i style="width:${u.forca / u.max * 100}%;background:#6fbf4a"></i></div></div>
+        <div class="terreno">${st ? st.terTxt : 'Fora do território'}<br>Postura atual: <b style="color:#f2d58b">${u.post}</b></div>
+        ${u.f === 1 ? `<h3 class="sec">Ordens militares</h3><div class="ordens">${D.ordens.map(o => `<button title="${o.desc}">${o.rot}<span>${o.custo}</span></button>`).join('')}</div>` : ''}</div>`;
+    } else if (s) {
+      const c = C.controle(s.idx);
+      painel.innerHTML = `<div class="cab"><div><h2>${s.n}</h2><p>Capital: ${s.cap} · ${s.pop.toLocaleString('pt-BR')} milhões</p></div></div><div class="corpo">
+        <div class="stats"><div>UPR<b>${Math.round(c[1] * 100)}%</b></div><div>Governo<b>${Math.round(c[0] * 100)}%</b></div><div>Apoio<b>${apoio[s.id]}%</b></div></div>
+        <div class="barra" style="display:flex"><i style="width:${c[1] * 100}%;background:var(--upr)"></i><i style="width:${c[2] * 100}%;background:var(--liga)"></i><i style="flex:1;background:var(--gov)"></i></div>
+        <div class="terreno">${s.terTxt}</div><h3 class="sec">Ações políticas</h3><div class="ordens">${D.politicas.map(o => `<button>${o}</button>`).join('')}</div></div>`;
+    } else { painel.classList.remove('aberto'); painel.innerHTML = ''; return; }
+    painel.classList.add('aberto');
+  }
+  if (innerWidth >= 900) clickAt(C.UNIDADES[0].p);
+
+  const btn = document.getElementById('fim');
+  btn.onclick = () => { btn.disabled = true; const flips = C.planTurn(); C.nextTurn(); let i = 0; const step = Math.max(4, Math.ceil(flips.length / 60)); const iv = setInterval(() => { for (let j = 0; j < step && i < flips.length; j++, i++) C.apply(flips[i]); dirty = true; if (i >= flips.length) { clearInterval(iv); btn.disabled = false; } }, 35); document.getElementById('data').textContent = '1 de ' + C.data().toLowerCase(); };
+  let last = 0; (function loop(ts) { draw(); if (ts - last > 250) { miniView(); last = ts; } requestAnimationFrame(loop); })(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cinejornal da Revolução</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@1,8..60,400;1,8..60,600&display=swap">
+<style>
+/* Conceito: documentário de guerra em película — mapa em tela cheia entre barras de cinema, narração em legenda */
+:root {
+  --mar: #8ea7b1; --mar-fundo: #7d97a2; --terra: #ebdfc4; --vizinho: #d6cbb1; --tinta: #2b2622;
+  --vermelho: #b8262b; --frente: #d81a20; --gov: #5b634e; --liga: #34456a; --papel: #f4ecd9; --barra: #0b0a09;
+  --f-titulo: 'Oswald', 'Arial Narrow', Impact, sans-serif; --f-narra: 'Source Serif 4', Georgia, serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--barra); color: var(--papel); overflow: hidden; font-family: var(--f-titulo); }
+#palco { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; }
+.barra { background: var(--barra); padding: 10px max(16px, env(safe-area-inset-left, 0px)) 10px max(16px, env(safe-area-inset-right, 0px)); display: flex; align-items: center; gap: 18px; position: relative; z-index: 3; }
+.barra.topo { padding-top: calc(10px + env(safe-area-inset-top, 0px)); justify-content: space-between; flex-wrap: wrap; }
+.barra.base { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); min-height: 84px; justify-content: center; }
+.selo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.selo img { width: 46px; height: 31px; display: block; box-shadow: 0 0 0 1px #000, 0 2px 8px #0008; }
+.selo .t1 { font-size: 11px; letter-spacing: .32em; color: #b9ae97; text-transform: uppercase; }
+.selo .t2 { font-size: 20px; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; line-height: 1.05; }
+.recursos { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a89d86; }
+.recursos b { display: block; font-size: 16px; letter-spacing: .04em; color: var(--papel); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btn { font-family: var(--f-titulo); font-size: 13px; letter-spacing: .22em; text-transform: uppercase; background: var(--vermelho); color: #fff; border: 0; padding: 10px 16px; cursor: pointer; box-shadow: inset 0 -2px 0 #0004; }
+.btn:hover { background: #cf2d32; } .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.btn.sec { background: transparent; color: #cfc3a8; box-shadow: inset 0 0 0 1px #5a5246; }
+#mapa-wrap { position: relative; overflow: hidden; }
+canvas#mapa { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+canvas#grao { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; mix-blend-mode: overlay; opacity: .5; }
+.vinheta { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(20,12,4,.55) 100%); }
+.cartela { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); top: 16px; pointer-events: none; color: var(--tinta); }
+.cartela .data { font-size: clamp(26px, 4vw, 46px); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; line-height: 1; text-shadow: 0 1px 0 #fff8; }
+.cartela .sub { font-size: 12px; letter-spacing: .4em; text-transform: uppercase; margin-top: 6px; opacity: .75; }
+.numero { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: 16px; width: 46px; height: 46px; border-radius: 50%; background: var(--papel); color: var(--tinta); display: grid; place-items: center; font-size: 26px; font-weight: 700; box-shadow: 0 0 0 3px var(--tinta); pointer-events: none; }
+.legenda { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 16px; background: #f4ecd9ee; color: var(--tinta); padding: 10px 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; display: grid; gap: 6px; box-shadow: 0 2px 10px #0003; }
+.legenda i { display: inline-block; width: 22px; height: 10px; vertical-align: middle; margin-right: 8px; }
+.narra { font-family: var(--f-narra); font-style: italic; font-size: clamp(15px, 1.6vw, 20px); text-align: center; max-width: 900px; line-height: 1.4; color: #f1e8d2; min-height: 2.8em; }
+.narra small { display: block; font-family: var(--f-titulo); font-style: normal; font-size: 11px; letter-spacing: .4em; text-transform: uppercase; color: #b99f7a; margin-bottom: 4px; }
+.zoom { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: 16px; display: flex; flex-direction: column; gap: 4px; }
+.zoom button { width: 34px; height: 34px; background: #f4ecd9ee; color: var(--tinta); border: 0; font: 600 18px var(--f-titulo); cursor: pointer; }
+#ficha { position: absolute; width: min(340px, calc(100% - 32px)); background: var(--papel); color: var(--tinta); box-shadow: 0 6px 26px #0006; padding: 0; z-index: 4; }
+#ficha header { background: var(--tinta); color: var(--papel); padding: 10px 14px; display: flex; gap: 10px; align-items: center; }
+#ficha header img { width: 36px; height: 24px; }
+#ficha header h3 { margin: 0; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+#ficha header p { margin: 0; font-size: 10px; letter-spacing: .25em; text-transform: uppercase; color: #b9ae97; }
+#ficha .dados { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #d6cbb1; }
+#ficha .dados div { background: var(--papel); padding: 8px 10px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #6b6253; }
+#ficha .dados b { display: block; font-size: 17px; color: var(--tinta); letter-spacing: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+#ficha .ordens { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 240px; overflow: auto; }
+#ficha .ordens button { text-align: left; background: #e9dfc6; border: 0; padding: 7px 9px; font: 500 12px var(--f-titulo); letter-spacing: .08em; text-transform: uppercase; color: var(--tinta); cursor: pointer; }
+#ficha .ordens button:hover { background: var(--vermelho); color: #fff; }
+#ficha .ordens button span { display: block; font: italic 11px var(--f-narra); text-transform: none; letter-spacing: 0; opacity: .75; margin-top: 2px; }
+#ficha .fechar { margin-left: auto; background: none; border: 0; color: var(--papel); font-size: 20px; cursor: pointer; }
+#ficha .terr { padding: 10px 14px; font: italic 13px var(--f-narra); }
+#dica { position: absolute; pointer-events: none; background: var(--tinta); color: var(--papel); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding: 5px 8px; white-space: nowrap; transform: translate(12px, 12px); z-index: 5; }
+@media (max-width: 700px) { .recursos { display: none; } .legenda { display: none; } .barra.base { min-height: 70px; } }
+@media (prefers-reduced-motion: reduce) { canvas#grao { display: none; } }
+</style>
+</head>
+<body>
+<div id="palco">
+  <div class="barra topo">
+    <div class="selo"><img id="bandeira" alt="Bandeira da UPR"><div><div class="t1">Cinejornal da Revolução · Nº 14</div><div class="t2">União Popular Revolucionária</div></div></div>
+    <div class="recursos" id="recursos"></div>
+    <div style="display:flex;gap:8px"><a class="btn sec" href="index.html" style="text-decoration:none">Galeria</a><button class="btn" id="turno">Próximo mês ▸</button></div>
+  </div>
+  <div id="mapa-wrap">
+    <canvas id="mapa" aria-label="Mapa da guerra revolucionária no Brasil"></canvas>
+    <canvas id="grao"></canvas>
+    <div class="vinheta"></div>
+    <div class="cartela"><div class="data" id="data">Março de 2028</div><div class="sub">Situação das frentes</div></div>
+    <div class="numero" id="num">1</div>
+    <div class="zoom"><button id="zi" aria-label="Aproximar">+</button><button id="zo" aria-label="Afastar">−</button><button id="zf" aria-label="Enquadrar" style="font-size:12px">⤢</button></div>
+    <div class="legenda">
+      <div><i style="background:var(--vermelho)"></i>Território da UPR</div>
+      <div><i style="background:var(--liga)"></i>Liga Federalista do Sul</div>
+      <div><i style="background:repeating-linear-gradient(90deg,var(--frente) 0 6px,transparent 6px 9px)"></i>Linha de frente</div>
+      <div><i style="background:var(--gov)"></i>Forças do governo</div>
+    </div>
+    <div id="ficha" hidden></div>
+    <div id="dica" hidden></div>
+  </div>
+  <div class="barra base"><div class="narra" id="narra"></div></div>
+</div>
+<script src="base/geo.js"></script>
+<script src="base/cenario.js"></script>
+<script src="base/dados.js"></script>
+<script>
+(function () {
+  const C = Cenario, G = C.G, D = DADOS;
+  const cv = document.getElementById('mapa'), ctx = cv.getContext('2d');
+  const COR = { 1: [184, 38, 43], 2: [52, 69, 106], 0: [91, 99, 78] };
+
+  // bandeira da UPR (vermelho com triângulo preto e estrela)
+  const flagSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#b8262b"/><polygon points="0,0 13,10 0,20" fill="#1d1a17"/><polygon fill="#f4ecd9" points="4.6,7.6 5.3,9.4 7.2,9.4 5.7,10.6 6.2,12.4 4.6,11.3 3.0,12.4 3.5,10.6 2.0,9.4 3.9,9.4"/></svg>`;
+  const flagUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSvg);
+  const govSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#3c6e3a"/><polygon points="15,2 28,10 15,18 2,10" fill="#e3c34a"/><circle cx="15" cy="10" r="4.4" fill="#2c3f7a"/></svg>`;
+  const ligaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><rect width="30" height="20" fill="#34456a"/><rect y="7" width="30" height="6" fill="#d9c27a"/></svg>`;
+  const flags = [govSvg, flagSvg, ligaSvg].map(s => { const i = new Image(); i.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s); i.onload = () => draw(); return i; });
+  document.getElementById('bandeira').src = flagUrl;
+
+  document.getElementById('recursos').innerHTML = D.recursos.slice(0, 5).map(r => `<div>${r.rot}<b>${r.v}</b></div>`).join('');
+
+  // caches
+  let mask = null, fronts = {}, dirty = true;
+  function rebuild() {
+    mask = C.maskCanvas({ 1: [...COR[1], 168], 2: [...COR[2], 150] });
+    fronts[1] = C.chains(C.contour(1)).map(l => C.smoothChain(l, 2));
+    fronts[2] = C.chains(C.contour(2)).map(l => C.smoothChain(l, 2));
+    dirty = false;
+  }
+  const countryPaths = G.countries.map(c => ({ ...c, path: new Path2D(c.d) }));
+  const riverPaths = G.rivers.map(r => ({ ...r, path: new Path2D(r.d) }));
+  const lakePaths = G.lakes.map(r => new Path2D(r.d));
+  const reliefPaths = G.relief.filter(r => /Range|Plateau/.test(r.k)).map(r => ({ ...r, path: new Path2D(r.d) }));
+  const land = new Path2D(); countryPaths.forEach(c => land.addPath(c.path)); land.addPath(C.brasil);
+
+  let t0 = performance.now(), anim = 0, sel = null, hover = null;
+  const cam = C.camera(cv, () => draw(), {
+    pad: [70, 20, 20, 20], focus: [230, 60, 1000, 900],
+    onHover: (m) => { hover = m; tip(m); },
+    onClick: (m) => clickAt(m)
+  });
+
+  function draw() {
+    if (dirty) rebuild();
+    const now = performance.now(); const t = (now - t0) / 1000;
+    cam.screen(ctx);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--mar');
+    ctx.fillRect(0, 0, cam.w, cam.h);
+    cam.apply(ctx); const k = cam.k;
+    // ondulações do mar
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 0.6 / k;
+    for (let y = -200; y < G.vh + 200; y += 9) { ctx.beginPath(); for (let x = -300; x < G.vw + 300; x += 12) { const yy = y + Math.sin(x * 0.05 + y) * 1.2; x === -300 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); } ctx.stroke(); }
+    ctx.restore();
+    // halo costeiro
+    ctx.save(); ctx.shadowColor = 'rgba(30,50,60,.55)'; ctx.shadowBlur = 18 * cam.dpr; ctx.fillStyle = '#d6cbb1'; ctx.fill(land); ctx.restore();
+    ctx.lineWidth = 4 / k; ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.stroke(land);
+    // países vizinhos
+    ctx.fillStyle = '#d4c9ae'; countryPaths.forEach(c => ctx.fill(c.path));
+    // Brasil
+    ctx.fillStyle = '#ebdfc4'; ctx.fill(C.brasil);
+    // relevo suave
+    ctx.save(); ctx.filter = `blur(${Math.max(1, 3 * k * cam.dpr) / cam.dpr}px)`; ctx.fillStyle = 'rgba(120,96,60,.16)'; reliefPaths.forEach(r => { if (/Range/.test(r.k)) ctx.fill(r.path); }); ctx.restore();
+    // território
+    ctx.save(); ctx.clip(C.brasil); ctx.imageSmoothingEnabled = true; ctx.filter = 'blur(0.6px)';
+    ctx.drawImage(mask, 0, 0, C.GW * C.CELL, C.GH * C.CELL); ctx.filter = 'none'; ctx.restore();
+    // rios e lagos
+    ctx.strokeStyle = 'rgba(70,110,128,.75)'; riverPaths.forEach(r => { ctx.lineWidth = (r.r <= 3 ? 1.3 : r.r <= 5 ? 0.85 : 0.55) / Math.sqrt(k) * 1.2; ctx.stroke(r.path); });
+    ctx.fillStyle = '#8ea7b1'; lakePaths.forEach(p => ctx.fill(p));
+    // fronteiras
+    ctx.setLineDash([5 / k, 3 / k]); ctx.strokeStyle = 'rgba(43,38,34,.55)'; ctx.lineWidth = 1 / k; countryPaths.forEach(c => ctx.stroke(c.path));
+    ctx.setLineDash([1.5 / k, 2.5 / k]); ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1 / k; C.states.forEach(s => ctx.stroke(s.path)); ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(43,38,34,.7)'; ctx.lineWidth = 1.4 / k; ctx.stroke(C.brasil);
+    // fortificações
+    C.FORTIFICACOES.forEach(f => { ctx.strokeStyle = '#3b4232'; ctx.lineWidth = 2.2 / k; line(f.p); ctx.lineWidth = 1.2 / k; teeth(f.p, 5 / k); });
+    // frentes
+    for (const f of [2, 1]) {
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.strokeStyle = f === 1 ? 'rgba(216,26,32,.25)' : 'rgba(40,55,95,.25)'; ctx.lineWidth = 8 / k; fronts[f].forEach(l => line(l));
+      ctx.strokeStyle = f === 1 ? '#d81a20' : '#2a3a63'; ctx.lineWidth = 2.4 / k; fronts[f].forEach(l => line(l));
+    }
+    // suprimento
+    C.SUPRIMENTO.forEach(s => { ctx.strokeStyle = s.ok ? 'rgba(90,20,20,.8)' : 'rgba(90,20,20,.45)'; ctx.lineWidth = 1.2 / k; ctx.setLineDash(s.ok ? [6 / k, 4 / k] : [2 / k, 5 / k]); ctx.lineDashOffset = -t * 12 / k; line(s.p); });
+    ctx.setLineDash([]); ctx.lineDashOffset = 0;
+    // setas
+    C.SETAS.forEach((s, i) => { const prog = Math.min(1, Math.max(0, (t - 0.3 - i * 0.18) / 1.1)); if (prog > 0) ribbon(s, prog, k); });
+
+    // ---- espaço de tela ----
+    cam.screen(ctx);
+    // nomes de países
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    countryPaths.forEach(c => { if (!c.lp) return; const p = cam.toScreen(c.lp); spaced(c.n.toUpperCase(), p[0], p[1], `500 ${Math.min(16, 10 * Math.sqrt(k))}px Oswald`, 'rgba(70,60,46,.55)', 3); });
+    spaced('OCEANO ATLÂNTICO', ...cam.toScreen([860, 780]), `500 ${Math.min(18, 12 * Math.sqrt(k))}px Oswald`, 'rgba(255,255,255,.55)', 6);
+    // estados (siglas)
+    if (k > 0.9) C.states.forEach(s => { const p = cam.toScreen(s.lp); spaced(s.id, p[0], p[1] + 14, '500 10px Oswald', 'rgba(43,38,34,.35)', 2); });
+    // cidades
+    C.CIDADES.forEach(c => {
+      if (!c.br && c.k !== 'ext') return; if (c.k === 'est' && k < 1.3) return;
+      const p = cam.toScreen(c.p);
+      ctx.fillStyle = '#2b2622';
+      if (c.k === 'nac') { star(p[0], p[1], 6, 2.6); } else ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4);
+      ctx.textAlign = 'left'; ctx.font = `${c.k === 'est' ? 400 : 500} ${c.k === 'est' ? 10 : 11}px Oswald`; ctx.fillStyle = 'rgba(43,38,34,.85)';
+      ctx.fillText(c.n.toUpperCase(), p[0] + 6, p[1] - 1);
+    });
+    // travessias e bases
+    C.TRAVESSIAS.forEach(b => { const p = cam.toScreen(b.p); ctx.strokeStyle = '#2b2622'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p[0] - 6, p[1] - 4); ctx.lineTo(p[0] - 3, p[1]); ctx.lineTo(p[0] + 3, p[1]); ctx.lineTo(p[0] + 6, p[1] - 4); ctx.moveTo(p[0] - 6, p[1] + 4); ctx.lineTo(p[0] - 3, p[1]); ctx.moveTo(p[0] + 6, p[1] + 4); ctx.lineTo(p[0] + 3, p[1]); ctx.stroke(); });
+    // combates
+    C.COMBATES.forEach((c, i) => { const p = cam.toScreen(c.p); burst(p[0], p[1], 9 + c.int * 3, t + i); });
+    // unidades
+    C.UNIDADES.forEach(u => counter(u, cam.toScreen(u.p), sel === u));
+  }
+  function frame() { draw(); setTimeout(() => requestAnimationFrame(frame), 33); }
+
+  // ---- utilitários de desenho ----
+  function line(pts) { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); }
+  function teeth(pts, s) { ctx.beginPath(); for (let i = 0; i < pts.length - 1; i++) { const a = pts[i], b = pts[i + 1]; const L = Math.hypot(b[0] - a[0], b[1] - a[1]); const nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L; for (let d = 0; d < L; d += s * 1.6) { const x = a[0] + (b[0] - a[0]) * d / L, y = a[1] + (b[1] - a[1]) * d / L; ctx.moveTo(x, y); ctx.lineTo(x + nx * s, y + ny * s); } } ctx.stroke(); }
+  function spaced(txt, x, y, font, color, sp) { ctx.font = font; ctx.fillStyle = color; ctx.letterSpacing = sp + 'px'; ctx.fillText(txt, x, y); ctx.letterSpacing = '0px'; }
+  function star(x, y, R, r) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); }
+  function ribbon(s, prog, k) {
+    const pts = C.arrowPath(s, prog); if (pts.length < 3) return;
+    const w0 = (s.f === 1 ? 15 : 12) / k, head = w0 * 0.95;
+    const L = [], R = []; let tot = 0; const seg = []; for (let i = 1; i < pts.length; i++) { seg.push(Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); tot += seg[i - 1]; }
+    let acc = 0; const stop = Math.max(0, tot - head * 1.4);
+    for (let i = 0; i < pts.length; i++) {
+      if (i) acc += seg[i - 1]; if (acc > stop && i < pts.length - 1) continue;
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)]; const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+      const w = w0 * (0.45 + 0.55 * Math.min(1, acc / (tot * 0.7))) / 2; const nx = -dy / l * w, ny = dx / l * w;
+      L.push([pts[i][0] + nx, pts[i][1] + ny]); R.unshift([pts[i][0] - nx, pts[i][1] - ny]);
+    }
+    const e = pts[pts.length - 1], q = pts[pts.length - 4] || pts[0]; const dx = e[0] - q[0], dy = e[1] - q[1], l = Math.hypot(dx, dy) || 1; const ux = dx / l, uy = dy / l;
+    const bx = e[0] - ux * head * 1.4, by = e[1] - uy * head * 1.4;
+    ctx.beginPath(); L.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+    ctx.lineTo(bx - uy * head, by + ux * head); ctx.lineTo(e[0], e[1]); ctx.lineTo(bx + uy * head, by - ux * head);
+    R.forEach(p => ctx.lineTo(p[0], p[1])); ctx.closePath();
+    const col = s.f === 1 ? '#c41e24' : s.f === 2 ? '#2f4170' : '#56604a';
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 6 * cam.dpr; ctx.shadowOffsetY = 2 * cam.dpr; ctx.fillStyle = col; ctx.fill(); ctx.restore();
+    ctx.strokeStyle = 'rgba(20,10,8,.75)'; ctx.lineWidth = 1 / k; ctx.stroke();
+  }
+  function burst(x, y, r, t) {
+    const pulse = 1 + Math.sin(t * 5) * 0.08;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(t * 2) * 0.08); ctx.scale(pulse, pulse);
+    ctx.beginPath(); const n = 11; for (let i = 0; i < n * 2; i++) { const a = i * Math.PI / n; const rr = i % 2 ? r * 0.48 : r * (0.9 + C.hash(i, Math.round(x)) * 0.3); ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath();
+    ctx.fillStyle = '#d81a20'; ctx.shadowColor = '#000a'; ctx.shadowBlur = 4; ctx.fill(); ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#4a0b0b'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.beginPath(); for (let i = 0; i < 14; i++) { const a = i * Math.PI / 7; const rr = i % 2 ? r * 0.2 : r * 0.42; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fillStyle = '#ffd8a0'; ctx.fill();
+    ctx.restore();
+  }
+  function counter(u, p, on) {
+    const w = 34, h = 22, x = p[0] - w / 2, y = p[1] - h / 2;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
+    ctx.fillStyle = u.f === 1 ? '#f4ecd9' : u.f === 2 ? '#dfe3ec' : '#e3e1d4'; ctx.fillRect(x, y, w, h); ctx.restore();
+    if (flags[u.f].complete) ctx.drawImage(flags[u.f], x + 2, y + 2, 15, 10);
+    // símbolo do tipo
+    ctx.strokeStyle = '#1d1a17'; ctx.lineWidth = 1.2; const sx = x + 19, sy = y + 3, sw = 12, sh = 8; ctx.strokeRect(sx, sy, sw, sh);
+    ctx.beginPath();
+    if (u.tipo === 'infantaria' || u.tipo === 'fuzileiros' || u.tipo === 'milicia') { ctx.moveTo(sx, sy); ctx.lineTo(sx + sw, sy + sh); ctx.moveTo(sx + sw, sy); ctx.lineTo(sx, sy + sh); }
+    if (u.tipo === 'blindada' || u.tipo === 'motorizada') { ctx.ellipse(sx + sw / 2, sy + sh / 2, sw / 2 - 2, sh / 2 - 1.5, 0, 0, Math.PI * 2); }
+    if (u.tipo === 'guerrilha') { ctx.moveTo(sx, sy + sh); ctx.lineTo(sx + sw / 2, sy); ctx.lineTo(sx + sw, sy + sh); }
+    if (u.tipo === 'aerotransportada') { ctx.moveTo(sx + 2, sy + sh - 2); ctx.quadraticCurveTo(sx + sw / 4, sy, sx + sw / 2, sy + sh - 2); ctx.quadraticCurveTo(sx + 3 * sw / 4, sy, sx + sw - 2, sy + sh - 2); }
+    ctx.stroke(); if (u.tipo === 'artilharia') { ctx.beginPath(); ctx.arc(sx + sw / 2, sy + sh / 2, 1.8, 0, 7); ctx.fillStyle = '#1d1a17'; ctx.fill(); }
+    ctx.fillStyle = '#1d1a17'; ctx.font = '600 9px Oswald'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText((u.forca / 1000).toFixed(1) + 'k', x + w / 2, y + h - 2);
+    ctx.strokeStyle = on ? '#d81a20' : u.post === 'cercada' ? '#d81a20' : '#1d1a17'; ctx.lineWidth = on ? 2.5 : 1; ctx.strokeRect(x, y, w, h);
+    if (u.post === 'cercada') { ctx.setLineDash([3, 2]); ctx.strokeStyle = '#d81a20'; ctx.beginPath(); ctx.arc(p[0], p[1], 24, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+  }
+
+  // ---- interação ----
+  const dica = document.getElementById('dica'), ficha = document.getElementById('ficha');
+  function unitAt(m) { if (!m) return null; let best = null, bd = 1e9; C.UNIDADES.forEach(u => { const d = Math.hypot(u.p[0] - m[0], u.p[1] - m[1]) * cam.k; if (d < 22 && d < bd) { bd = d; best = u; } }); return best; }
+  function tip(m) {
+    if (!m) { dica.hidden = true; return; }
+    const u = unitAt(m); const s = C.stateAt(m[0], m[1]); const sp = cam.toScreen(m);
+    let txt = ''; if (u) txt = `${u.nome} · ${u.forca.toLocaleString('pt-BR')} homens`; else if (s) { const c = C.controle(s.idx); txt = `${s.n} · UPR ${Math.round(c[1] * 100)}%`; }
+    if (!txt) { dica.hidden = true; return; }
+    dica.hidden = false; dica.textContent = txt; dica.style.left = sp[0] + 'px'; dica.style.top = sp[1] + 'px';
+    cv.style.cursor = u ? 'pointer' : 'grab';
+  }
+  function clickAt(m) {
+    const u = unitAt(m); const s = C.stateAt(m[0], m[1]);
+    if (!u && !s) { ficha.hidden = true; sel = null; return; }
+    sel = u; const sp = cam.toScreen(m); const wrap = document.getElementById('mapa-wrap').getBoundingClientRect();
+    if (u) {
+      ficha.innerHTML = `<header><img src="${flags[u.f].src}" alt=""><div><p>${C.FAC[u.f].nome}</p><h3>${u.nome}</h3></div><button class="fechar" aria-label="Fechar">×</button></header>
+        <div class="dados"><div>Efetivo<b>${u.forca.toLocaleString('pt-BR')}</b></div><div>Moral<b>${u.moral}%</b></div><div>Suprimento<b>${u.sup}%</b></div></div>
+        <div class="terr">Postura: ${u.post}. ${(C.stateAt(u.p[0], u.p[1]) || {}).terTxt || ''}</div>
+        ${u.f === 1 ? `<div class="ordens">${D.ordens.map(o => `<button title="${o.desc}">${o.rot}<span>${o.custo} · ${o.desc.split('.')[0]}</span></button>`).join('')}</div>` : ''}`;
+    } else {
+      const c = C.controle(s.idx);
+      ficha.innerHTML = `<header><div><p>Estado · ${s.cap}</p><h3>${s.n}</h3></div><button class="fechar" aria-label="Fechar">×</button></header>
+        <div class="dados"><div>População<b>${s.pop.toLocaleString('pt-BR')} mi</b></div><div>UPR<b>${Math.round(c[1] * 100)}%</b></div><div>Governo<b>${Math.round(c[0] * 100)}%</b></div></div>
+        <div class="terr">${s.terTxt}</div>
+        <div class="ordens">${D.politicas.map(o => `<button>${o}</button>`).join('')}</div>`;
+    }
+    ficha.hidden = false;
+    const fw = ficha.offsetWidth, fh = ficha.offsetHeight;
+    ficha.style.left = Math.max(16, Math.min(wrap.width - fw - 16, sp[0] + 20)) + 'px';
+    ficha.style.top = Math.max(70, Math.min(wrap.height - fh - 16, sp[1] - 40)) + 'px';
+    ficha.querySelector('.fechar').onclick = () => { ficha.hidden = true; sel = null; };
+  }
+
+  // ---- narração ----
+  const narra = document.getElementById('narra'); let ni = 0;
+  function narrar() { const d = D.despachos[ni % D.despachos.length]; ni++; narra.innerHTML = `<small>${d.t}</small><span></span>`; const sp = narra.querySelector('span'); let i = 0; const iv = setInterval(() => { sp.textContent = d.x.slice(0, ++i); if (i >= d.x.length) clearInterval(iv); }, 22); }
+  narrar(); setInterval(narrar, 7000);
+
+  // ---- turno ----
+  const btn = document.getElementById('turno');
+  btn.onclick = () => {
+    btn.disabled = true; const flips = C.planTurn(); C.nextTurn(); t0 = performance.now() - 300;
+    let i = 0; const step = Math.max(4, Math.ceil(flips.length / 70));
+    const iv = setInterval(() => { for (let j = 0; j < step && i < flips.length; j++, i++) C.apply(flips[i]); dirty = true; if (i >= flips.length) { clearInterval(iv); btn.disabled = false; } }, 33);
+    document.getElementById('data').textContent = C.data(); document.getElementById('num').textContent = C.turno + 1; narrar();
+  };
+  document.getElementById('zi').onclick = cam.zoomIn; document.getElementById('zo').onclick = cam.zoomOut; document.getElementById('zf').onclick = cam.fit;
+
+  // ---- grão de filme ----
+  const gr = document.getElementById('grao'), gctx = gr.getContext('2d');
+  function grain() { gr.width = 220; gr.height = 160; const img = gctx.createImageData(220, 160); for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 40; } gctx.putImageData(img, 0, 0); }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(grain, 80); else grain();
+
+  frame();
+})();
+</script>
+</body>
+</html>
